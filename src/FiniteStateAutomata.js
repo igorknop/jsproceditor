@@ -1,7 +1,7 @@
 function FiniteStateAutomata(){
    this.states = new Array();
    this.initialState = null;
-   this.finalState = null;
+   this.finalStates = new Array();
    this.transitions = new Array();
 }
 
@@ -16,15 +16,15 @@ FiniteStateAutomata.prototype.getInitialState = function () {
    return this.initialState;
 };
 
-FiniteStateAutomata.prototype.setFinalState = function (state) {
+FiniteStateAutomata.prototype.addFinalState = function (state) {
    if (this.states[state]===undefined){
-      throw new ReferenceError("Invalid final state!");
+      throw new ReferenceError("Invalid final state:"+state+"!");
    }
-   this.finalState = state;
+   this.finalStates[state] = state;
 };
 
-FiniteStateAutomata.prototype.getFinalState = function () {
-   return this.finalState;
+FiniteStateAutomata.prototype.getFinalStates = function () {
+   return this.finalStates;
 };
 
 FiniteStateAutomata.prototype.addState = function (state) {
@@ -35,7 +35,6 @@ FiniteStateAutomata.prototype.addState = function (state) {
    if (this.initialState===null){
       this.setInitialState(state);
    }
-   this.setFinalState(state);
 };
 
 FiniteStateAutomata.prototype.getState = function (state) {

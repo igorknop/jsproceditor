@@ -35,19 +35,21 @@ describe ("Finite State Automata", function(){
       expect(fsa.getInitialState()).toBeNull();   
    });
 
-   it("Should have final state null when created", function(){
-      expect(fsa.getFinalState()).toBeNull();   
+   it("Should have final states empty when created", function(){
+      expect(fsa.getFinalStates().length).toEqual(0);   
    });
 
-   it("Should set the final state to last added state when adding a state", function(){
+   it("Should add a final state when adding a final state", function(){
       fsa.addState(1);
-      expect(fsa.getFinalState()).toEqual(1);
       fsa.addState(2);
-      expect(fsa.getFinalState()).toEqual(2);
+      fsa.addFinalState(1);
+      expect(fsa.getFinalStates()[1]).toEqual(1);
+      fsa.addFinalState(2);
+      expect(fsa.getFinalStates()[2]).toEqual(2);
    });
 
-   it("Should throw an exception when set the final state to inexistant one", function(){
-      expect(function(){ fsa.setFinalState("1") }).toThrow();
+   it("Should throw an exception when adding a final state to inexistant one", function(){
+      expect(function(){ fsa.addFinalState("1") }).toThrow();
    });
    
    it("Should have a empty transition list when created", function(){
