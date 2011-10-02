@@ -1,6 +1,7 @@
 function FiniteStateAutomata(){
    this.states = new Array();
    this.initialState = null;
+   this.currentState = null;
    this.finalStates = new Array();
    this.transitions = new Array();
 }
@@ -75,4 +76,8 @@ FiniteStateAutomata.prototype.nextState = function (current,transition){
    } catch (e) {
       throw new ReferenceError("Transition "+transition+" is impossible from "+current+"!");
    }
+};
+
+FiniteStateAutomata.prototype.getCurrentState = function (){
+   return this.currentState;
 };

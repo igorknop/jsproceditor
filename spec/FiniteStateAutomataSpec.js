@@ -90,4 +90,8 @@ describe ("Finite State Automata", function(){
       fsa.addTransition(1, 2, "a");
       expect(fsa.nextState(1,"a")).toEqual(2);      
    });
+
+   it("Should have current state null when created", function(){
+      expect(fsa.getCurrentState()).toBeNull(); 
+   });
 });
