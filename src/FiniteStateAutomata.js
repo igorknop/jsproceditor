@@ -81,3 +81,10 @@ FiniteStateAutomata.prototype.nextState = function (current,transition){
 FiniteStateAutomata.prototype.getCurrentState = function (){
    return this.currentState;
 };
+
+FiniteStateAutomata.prototype.setCurrentState = function (state) {
+   if (this.states[state]===undefined){
+      throw new ReferenceError("Invalid current state: "+state+"!");
+   }
+   this.currentState = state;
+};

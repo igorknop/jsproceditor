@@ -94,4 +94,20 @@ describe ("Finite State Automata", function(){
    it("Should have current state null when created", function(){
       expect(fsa.getCurrentState()).toBeNull(); 
    });
+
+   it("Should return current state when setting current state", function(){
+      fsa.addState(1);
+      fsa.addState(2);
+      fsa.addState(3);
+      fsa.setCurrentState(1);
+      expect(fsa.getCurrentState()).toEqual(1);      
+      fsa.setCurrentState(3);
+      expect(fsa.getCurrentState()).not.toEqual(2);      
+      fsa.setCurrentState(2);
+      expect(fsa.getCurrentState()).toEqual(2);      
+   });
+
+   it("Should throw an exception when setting current state to an inexistant state", function(){
+      expect(function(){fsa.setCurrentState(1)}).toThrow();
+   });
 });
