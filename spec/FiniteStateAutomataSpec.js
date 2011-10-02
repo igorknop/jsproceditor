@@ -66,4 +66,18 @@ describe ("Finite State Automata", function(){
       fsa.addTransition(1, 2, "a");
       fsa.addTransition(1, 2, "b");
    });
+
+   it("Should return true when test for a transition when the transition was added before", function(){
+      fsa.addState(1);
+      fsa.addState(2);
+      fsa.addTransition(1, 2, "a");
+      expect(fsa.testTransition(1,2,"a")).toBeTruthy();
+   });
+
+   it("Should return false when test for a transition when the transition wasnt added before", function(){
+      fsa.addState(1);
+      fsa.addState(2);
+      fsa.addTransition(1, 2, "a");
+      expect(fsa.testTransition(1,2,"b")).toBeFalsy();
+   });
 });

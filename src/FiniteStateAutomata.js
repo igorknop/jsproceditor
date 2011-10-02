@@ -58,6 +58,16 @@ FiniteStateAutomata.prototype.addTransition = function (from, to, transition) {
    if (this.transitions[from][to]===undefined){
       this.transitions[from][to] = new Array();
    }
-   this.transitions[from][to].push(transition);
+   this.transitions[from][to][transition] = transition;
+};
+
+FiniteStateAutomata.prototype.testTransition = function (from, to, transition){
+   try {
+      if (this.transitions[from][to][transition]!==undefined){
+         return true;
+      }
+   } catch (e) {
+      return false;
+   }
 };
 
