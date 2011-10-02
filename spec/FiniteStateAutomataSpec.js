@@ -66,4 +66,12 @@ describe ("Finite State Automata", function(){
       fsa.addState(2);
       expect(function(){fsa.addTransition(1,3,"t")}).toThrow();
    });
+
+   it("Should return an array when looking for existing transitions", function(){
+      var fsa = new FiniteStateAutomata();
+      fsa.addState(1);
+      fsa.addState(2);
+      fsa.addTransition(1, 2, "a");
+      fsa.addTransition(1, 2, "b");
+   });
 });

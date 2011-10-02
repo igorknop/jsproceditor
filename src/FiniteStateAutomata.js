@@ -52,9 +52,12 @@ FiniteStateAutomata.prototype.addTransition = function (from, to, transition) {
    if (this.states[to]===undefined){
       throw new ReferenceError("State "+to+" is not defined!");
    }
-   if (!this.transitions[from].length){
+   if (this.transitions[from]===undefined){
       this.transitions[from] = new Array();
    }
-   this.transitions[from][to] = transition;
+   if (this.transitions[from][to]===undefined){
+      this.transitions[from][to] = new Array();
+   }
+   this.transitions[from][to].push(transition);
 };
 
