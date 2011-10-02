@@ -1,24 +1,24 @@
-describe ("Automato de Estados Finitos", function(){
-   it("Deve ter um estado na sua lista após adicionar um novo estado",function(){
+describe ("Finite State Automata", function(){
+   it("Should have a state on his state list after add a new state",function(){
       var fsa = new FiniteStateAutomata();
       fsa.addState("1");
       expect(fsa.getState("1")).toBeDefined();
       expect(fsa.states["1"]).toBeDefined();
    });
 
-   it("Deve possuir um campo para guardar o estado inicial", function(){
+   it("Should have a field to hold initial state", function(){
       var fsa = new FiniteStateAutomata();
       fsa.addState("1");
       fsa.setInitialState("1");
       expect(fsa.initialState).toEqual("1");
    });
 
-   it("Deve disparar uma exceção se o estado inicial for inexistente", function(){
+   it("Should throw an exception when set a the initial state to inexistant one", function(){
       var fsa = new FiniteStateAutomata();
       expect(function(){ fsa.setInitialState("1") }).toThrow();
    });
 
-   it("Deve disparar uma exceção se o estado já foi definido anteriormente", function(){
+   it("Should throw an exception  when a adding a already existant state", function(){
       var fsa = new FiniteStateAutomata();
       fsa.addState(1);
       expect(function(){ fsa.addState(1) }).toThrow();
