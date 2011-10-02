@@ -81,11 +81,11 @@ describe ("Finite State Automata", function(){
       expect(fsa.testTransition(1,2,"b")).toBeFalsy();
    });
 
-   it("Should throw an exception when setting a transition already defined", function(){
+   
+   it("Should return next state when asking for a transition", function(){
       fsa.addState(1);
       fsa.addState(2);
       fsa.addTransition(1, 2, "a");
-      expect(function(){fsa.addTransition(1,2,"a")}).toThrow();
+      expect(fsa.nextState(1,"a")).toEqual(2);      
    });
-   
 });

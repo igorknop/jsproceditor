@@ -55,18 +55,12 @@ FiniteStateAutomata.prototype.addTransition = function (from, to, transition) {
    if (this.transitions[from]===undefined){
       this.transitions[from] = new Array();
    }
-   if (this.transitions[from][to]===undefined){
-      this.transitions[from][to] = new Array();
-   }
-   if (this.transitions[from][to][transition]==transition){
-      throw new ReferenceError("Transition "+transition+" already defined between "+from+" and "+to+"!");
-   }
-   this.transitions[from][to][transition] = transition;
+   this.transitions[from][transition] = to;
 };
 
 FiniteStateAutomata.prototype.testTransition = function (from, to, transition){
    try {
-      if (this.transitions[from][to][transition]!==undefined){
+      if (this.transitions[from][transition]===to){
          return true;
       }
    } catch (e) {
@@ -74,3 +68,12 @@ FiniteStateAutomata.prototype.testTransition = function (from, to, transition){
    }
 };
 
+FiniteStateAutomata.prototype.nextState = function (current,transition){
+   try {
+      if (this.transitions[current][transition]!==undefined){
+         return this.transitions[current][transition];
+      }
+   } catch (e) {
+      throw new ReferenceError("Transition "+transition+" is impossible from "+current+"!");
+   }
+};
