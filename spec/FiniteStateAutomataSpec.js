@@ -110,4 +110,15 @@ describe ("Finite State Automata", function(){
    it("Should throw an exception when setting current state to an inexistant state", function(){
       expect(function(){fsa.setCurrentState(1)}).toThrow();
    });
+
+   it("Should return initial state when alphabet are empty", function(){
+      fsa.addState(1);
+      fsa.addState(2);
+      fsa.setInitialState(1);
+      fsa.addFinalState(2);
+      fsa.addTransition(1,2,"a");
+      expect(fsa.transition(fsa.getInitialState(), [])).toEqual(1);
+      expect(fsa.transition(fsa.getInitialState(), ["a"])).toEqual(2);
+   });
+
 });

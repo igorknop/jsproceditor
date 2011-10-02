@@ -88,3 +88,17 @@ FiniteStateAutomata.prototype.setCurrentState = function (state) {
    }
    this.currentState = state;
 };
+
+FiniteStateAutomata.prototype.transition = function (q, alphabet) {
+   if(alphabet.length===undefined){
+      throw new TypeError("Alphabet should be an array: "+alphabet+"!");
+   }
+   if(alphabet.length===0){
+      return q;
+   }
+   var t = alphabet.shift();
+   
+   return this.transition(this.nextState(q,t), alphabet);
+};
+
+
