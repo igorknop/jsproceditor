@@ -36,4 +36,23 @@ describe ("Finite State Automata", function(){
       var fsa = new FiniteStateAutomata();
       expect(fsa.getInitialState()).toBeNull();   
    });
+
+   it("Should have final state null when created", function(){
+      var fsa = new FiniteStateAutomata();
+      expect(fsa.getFinalState()).toBeNull();   
+   });
+
+   it("Should set the final state to last added state when adding a state", function(){
+      var fsa = new FiniteStateAutomata();
+      fsa.addState(1);
+      expect(fsa.getFinalState()).toEqual(1);
+      fsa.addState(2);
+      expect(fsa.getFinalState()).toEqual(2);
+   });
+
+   it("Should throw an exception when set the final state to inexistant one", function(){
+      var fsa = new FiniteStateAutomata();
+      expect(function(){ fsa.setFinalState("1") }).toThrow();
+   });
+   
 });
