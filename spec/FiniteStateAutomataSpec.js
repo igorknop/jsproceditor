@@ -55,4 +55,15 @@ describe ("Finite State Automata", function(){
       expect(function(){ fsa.setFinalState("1") }).toThrow();
    });
    
+   it("Should have a empty transition list when created", function(){
+      var fsa = new FiniteStateAutomata();
+      expect(fsa.transitions.length).toEqual(0);
+   });
+
+   it("Should throw an exception when setting a transition to an inexistant state", function(){
+      var fsa = new FiniteStateAutomata();
+      fsa.addState(1);
+      fsa.addState(2);
+      expect(function(){fsa.addTransition(1,3,"t")}).toThrow();
+   });
 });
