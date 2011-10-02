@@ -58,6 +58,9 @@ FiniteStateAutomata.prototype.addTransition = function (from, to, transition) {
    if (this.transitions[from][to]===undefined){
       this.transitions[from][to] = new Array();
    }
+   if (this.transitions[from][to][transition]==transition){
+      throw new ReferenceError("Transition "+transition+" already defined between "+from+" and "+to+"!");
+   }
    this.transitions[from][to][transition] = transition;
 };
 

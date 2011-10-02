@@ -80,4 +80,12 @@ describe ("Finite State Automata", function(){
       fsa.addTransition(1, 2, "a");
       expect(fsa.testTransition(1,2,"b")).toBeFalsy();
    });
+
+   it("Should throw an exception when setting a transition already defined", function(){
+      fsa.addState(1);
+      fsa.addState(2);
+      fsa.addTransition(1, 2, "a");
+      expect(function(){fsa.addTransition(1,2,"a")}).toThrow();
+   });
+   
 });
