@@ -24,4 +24,16 @@ describe ("Finite State Automata", function(){
       expect(function(){ fsa.addState(1) }).toThrow();
    });
 
+   it("Should set the initial state to first added state when adding a state", function(){
+      var fsa = new FiniteStateAutomata();
+      fsa.addState(1);
+      expect(fsa.getInitialState()).toEqual(1);
+      fsa.addState(2);
+      expect(fsa.getInitialState()).toEqual(1);
+   });
+
+   it("Should have initial state null when created", function(){
+      var fsa = new FiniteStateAutomata();
+      expect(fsa.getInitialState()).toBeNull();   
+   });
 });
