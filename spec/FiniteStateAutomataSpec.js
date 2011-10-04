@@ -129,8 +129,8 @@ describe ("Finite State Automata", function(){
          fsa.setInitialState(1);
          fsa.addFinalState(2);
          fsa.addTransition(1,2,"a");
-         expect(fsa.isMatch([])).toBeFalsy();
-         expect(fsa.isMatch(["a"])).toBeTruthy();      
+         expect(fsa.isMatchArray([])).toBeFalsy();
+         expect(fsa.isMatchArray(["a"])).toBeTruthy();      
       });
 
       it("Should return true when final state is final", function(){
@@ -149,15 +149,15 @@ describe ("Finite State Automata", function(){
          fsa.addTransition(3,4,"a");
          fsa.addTransition(4,4,"a");
 
-         expect(fsa.isMatch([])).toBeFalsy();
-         expect(fsa.isMatch(["a","b","a","b"])).toBeFalsy();
-         expect(fsa.isMatch(["a"])).toBeFalsy();
-         expect(fsa.isMatch(["b"])).toBeFalsy();
-         expect(fsa.isMatch(["a","b"])).toBeFalsy();
-         expect(fsa.isMatch(["a","a"])).toBeTruthy();      
-         expect(fsa.isMatch(["a","b","a","a"])).toBeTruthy();      
-         expect(fsa.isMatch(["a","b","b","a"])).toBeTruthy();      
-         expect(fsa.isMatch(["a","b","a","b","a","a"])).toBeTruthy();      
+         expect(fsa.isMatchArray([])).toBeFalsy();
+         expect(fsa.isMatchArray(["a","b","a","b"])).toBeFalsy();
+         expect(fsa.isMatchArray(["a"])).toBeFalsy();
+         expect(fsa.isMatchArray(["b"])).toBeFalsy();
+         expect(fsa.isMatchArray(["a","b"])).toBeFalsy();
+         expect(fsa.isMatchArray(["a","a"])).toBeTruthy();      
+         expect(fsa.isMatchArray(["a","b","a","a"])).toBeTruthy();      
+         expect(fsa.isMatchArray(["a","b","b","a"])).toBeTruthy();      
+         expect(fsa.isMatchArray(["a","b","a","b","a","a"])).toBeTruthy();      
       });
 
       it("Should return true when final state is final", function(){
@@ -176,15 +176,15 @@ describe ("Finite State Automata", function(){
          fsa.addTransition(3,4,"a");
          fsa.addTransition(4,4,"a");
 
-         expect(fsa.isMatchStr("")).toBeFalsy();
-         expect(fsa.isMatchStr("abab")).toBeFalsy();
-         expect(fsa.isMatchStr("a")).toBeFalsy();
-         expect(fsa.isMatchStr("b")).toBeFalsy();
-         expect(fsa.isMatchStr("ab")).toBeFalsy();
-         expect(fsa.isMatchStr("aa")).toBeTruthy();      
-         expect(fsa.isMatchStr("abaa")).toBeTruthy();      
-         expect(fsa.isMatchStr("abba")).toBeTruthy();      
-         expect(fsa.isMatchStr("ababaa")).toBeTruthy();      
+         expect(fsa.isMatchString("")).toBeFalsy();
+         expect(fsa.isMatchString("abab")).toBeFalsy();
+         expect(fsa.isMatchString("a")).toBeFalsy();
+         expect(fsa.isMatchString("b")).toBeFalsy();
+         expect(fsa.isMatchString("ab")).toBeFalsy();
+         expect(fsa.isMatchString("aa")).toBeTruthy();      
+         expect(fsa.isMatchString("abaa")).toBeTruthy();      
+         expect(fsa.isMatchString("abba")).toBeTruthy();      
+         expect(fsa.isMatchString("ababaa")).toBeTruthy();      
       });
    });
    
