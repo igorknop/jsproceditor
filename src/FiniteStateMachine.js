@@ -10,6 +10,7 @@ FiniteStateMachine.prototype.setInitialState = function (state) {
    if (this.states[state]===undefined){
       throw new ReferenceError("Invalid initial state!");
    }
+   this.setCurrentState(state);
    this.initialState = state;
 };
 
@@ -93,16 +94,17 @@ FiniteStateMachine.prototype.transition = function (q, alphabet) {
    if(alphabet.length===undefined){
       throw new TypeError("Alphabet should be an array: "+alphabet+"!");
    }
+   this.setCurrentState(q);
    if(alphabet.length===0){
-      return q;
+      return this.getCurrentState();
    }
    var t = alphabet.shift();
    
-   return this.transition(this.nextState(q,t), alphabet);
+   return this.transition(this.nextState(this.getCurrentState(),t), alphabet);
 };
 
 FiniteStateMachine.prototype.isMatchArray = function (alphabet) {
-   var state = this.transition(this.initialState, alphabet);
+   var state = this.transition(this.getInitialState(), alphabet);
    return this.finalStates[state]!==undefined;
 };
 
