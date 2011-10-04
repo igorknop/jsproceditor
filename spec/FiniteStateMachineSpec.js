@@ -88,7 +88,7 @@ describe ("Finite State Machine", function(){
       fsa.addState(1);
       fsa.addState(2);
       fsa.addTransition(1, 2, "a");
-      expect(fsa.nextState(1,"a")).toEqual(2);      
+      expect(fsa.moveToNextState("a")).toEqual(2);      
    });
 
    it("Should have current state null when created", function(){

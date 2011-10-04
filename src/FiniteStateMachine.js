@@ -69,13 +69,13 @@ FiniteStateMachine.prototype.testTransition = function (from, to, transition){
    }
 };
 
-FiniteStateMachine.prototype.nextState = function (current,transition){
+FiniteStateMachine.prototype.moveToNextState = function (transition){
    try {
-      if (this.transitions[current][transition]!==undefined){
-         return this.transitions[current][transition];
+      if (this.transitions[this.getCurrentState()][transition]!==undefined){
+         return this.transitions[this.getCurrentState()][transition];
       }
    } catch (e) {
-      throw new ReferenceError("Transition "+transition+" is impossible from "+current+"!");
+      throw new ReferenceError("Transition "+transition+" is impossible from "+this.getCurrentState()+"!");
    }
 };
 
@@ -100,7 +100,7 @@ FiniteStateMachine.prototype.transition = function (q, alphabet) {
    }
    var t = alphabet.shift();
    
-   return this.transition(this.nextState(this.getCurrentState(),t), alphabet);
+   return this.transition(this.moveToNextState(t), alphabet);
 };
 
 FiniteStateMachine.prototype.isMatchArray = function (alphabet) {
