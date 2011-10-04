@@ -121,4 +121,71 @@ describe ("Finite State Automata", function(){
       expect(fsa.transition(fsa.getInitialState(), ["a"])).toEqual(2);
    });
 
+   describe("Examples", function(){
+
+      it("Should return true when final state is final", function(){
+         fsa.addState(1);
+         fsa.addState(2);
+         fsa.setInitialState(1);
+         fsa.addFinalState(2);
+         fsa.addTransition(1,2,"a");
+         expect(fsa.isMatch([])).toBeFalsy();
+         expect(fsa.isMatch(["a"])).toBeTruthy();      
+      });
+
+      it("Should return true when final state is final", function(){
+         fsa.addState(1);
+         fsa.addState(2);
+         fsa.addState(3);
+         fsa.addState(4);
+         fsa.setInitialState(1);
+         fsa.addFinalState(4);
+         fsa.addTransition(1,2,"b");
+         fsa.addTransition(1,3,"a");
+         fsa.addTransition(3,2,"b");
+         fsa.addTransition(2,3,"a");
+         fsa.addTransition(2,4,"b");
+         fsa.addTransition(3,4,"a");
+         fsa.addTransition(3,4,"a");
+         fsa.addTransition(4,4,"a");
+
+         expect(fsa.isMatch([])).toBeFalsy();
+         expect(fsa.isMatch(["a","b","a","b"])).toBeFalsy();
+         expect(fsa.isMatch(["a"])).toBeFalsy();
+         expect(fsa.isMatch(["b"])).toBeFalsy();
+         expect(fsa.isMatch(["a","b"])).toBeFalsy();
+         expect(fsa.isMatch(["a","a"])).toBeTruthy();      
+         expect(fsa.isMatch(["a","b","a","a"])).toBeTruthy();      
+         expect(fsa.isMatch(["a","b","b","a"])).toBeTruthy();      
+         expect(fsa.isMatch(["a","b","a","b","a","a"])).toBeTruthy();      
+      });
+
+      it("Should return true when final state is final", function(){
+         fsa.addState(1);
+         fsa.addState(2);
+         fsa.addState(3);
+         fsa.addState(4);
+         fsa.setInitialState(1);
+         fsa.addFinalState(4);
+         fsa.addTransition(1,2,"b");
+         fsa.addTransition(1,3,"a");
+         fsa.addTransition(3,2,"b");
+         fsa.addTransition(2,3,"a");
+         fsa.addTransition(2,4,"b");
+         fsa.addTransition(3,4,"a");
+         fsa.addTransition(3,4,"a");
+         fsa.addTransition(4,4,"a");
+
+         expect(fsa.isMatchStr("")).toBeFalsy();
+         expect(fsa.isMatchStr("abab")).toBeFalsy();
+         expect(fsa.isMatchStr("a")).toBeFalsy();
+         expect(fsa.isMatchStr("b")).toBeFalsy();
+         expect(fsa.isMatchStr("ab")).toBeFalsy();
+         expect(fsa.isMatchStr("aa")).toBeTruthy();      
+         expect(fsa.isMatchStr("abaa")).toBeTruthy();      
+         expect(fsa.isMatchStr("abba")).toBeTruthy();      
+         expect(fsa.isMatchStr("ababaa")).toBeTruthy();      
+      });
+   });
+   
 });

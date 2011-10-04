@@ -101,4 +101,23 @@ FiniteStateAutomata.prototype.transition = function (q, alphabet) {
    return this.transition(this.nextState(q,t), alphabet);
 };
 
+FiniteStateAutomata.prototype.isMatch = function (alphabet) {
+   var state = this.transition(this.initialState, alphabet);
+   return this.finalStates[state]!==undefined;
+};
 
+FiniteStateAutomata.prototype.isMatchStr = function (text) {
+   var alphabet = new Array();   
+   for(var i=0; i<text.length; i++){
+      alphabet.push(text[i]);
+   }   
+   return this.isMatch(alphabet);
+};
+
+FiniteStateAutomata.prototype.transitionStr = function (text) {
+   var alphabet = new Array();   
+   for(var i=0; i<text.length; i++){
+      alphabet.push(text[i]);
+   }   
+   return this.transition(this.getInitialState(),alphabet);
+};
