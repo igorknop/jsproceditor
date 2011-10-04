@@ -1,20 +1,30 @@
 function LexicalAnalyser () {
-   FiniteStateAutomata.call(this);
-   this.automata = null;
+   this.machine = null;
 };
 
-LexicalAnalyser.prototype = new FiniteStateAutomata();
-LexicalAnalyser.prototype.construtor = LexicalAnalyser();
-
-LexicalAnalyser.prototype.parse = function(){
-
+LexicalAnalyser.prototype.getMachine = function (){
+   return this.machine;
+};
+LexicalAnalyser.prototype.setMachine = function (machine){
+   if(!machine instanceof FiniteStateMachine){
+      throw new TypeError("Machine should be an FiniteStateMachine object!");
+   }
+   this.machine = machine;
 };
 
-LexicalAnalyser.prototype.setAutomata = function (automata){
-   this.automata = automata;
-};
-
-LexicalAnalyser.prototype.lexico = function (text){
-   this.automata.transitionStr(text);
-};
+LexicalAnalyser.prototype.isLexicalCorrect = function (text){
+   try{
+      this.machine.isMatchString(text);
+   } catch(e){
+      console.log("catch");
+      console.log(this.machine.getCurrentState());
+      console.log(this.machine.getCurrentSymbolCounter());
+      console.log(text);
+      console.log('"'+text.substr(this.machine.getCurrentSymbolCounter()-1, text.length)+'"');
+      return this.isLexicalCorrect(text.substr(this.machine.getCurrentSymbolCounter()-1, text.length));
+   }
+      console.log(this.machine.getCurrentState());
+      console.log(this.machine.getCurrentSymbolCounter());
+   return true;
+}
 

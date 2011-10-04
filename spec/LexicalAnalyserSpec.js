@@ -1,49 +1,38 @@
 describe("Lexical Analyser", function(){
-   it("Should return a number when it reach a final state of fsa",function(){
-         var fsa = new FiniteStateAutomata();
-         fsa.addState(1);
-         fsa.addState(2);
-         fsa.addState(3);
-         fsa.addState(4);
-         fsa.addState(5);
-         fsa.addState("id");
-         fsa.addState("del");
-         fsa.setInitialState(1);
-         fsa.addFinalState("id");
-         fsa.addFinalState("del");
-         fsa.addTransition(1,2,"b");
-         fsa.addTransition(1,3,"a");
-         fsa.addTransition(3,2,"b");
-         fsa.addTransition(2,3,"a");
-         fsa.addTransition(2,4,"b");
-         fsa.addTransition(3,4,"a");
-         fsa.addTransition(3,4,"a");
-         fsa.addTransition(4,4,"a");
-         fsa.addTransition(4,4,"b");
-         fsa.addTransition(1,5," ");
-         fsa.addTransition(5,5," ");
-        
-         fsa.addTransition(4,"id"," ");
-         fsa.addTransition(5,"del","a");
-         fsa.addTransition(5,"del","b");
-         
-      var la = new LexicalAnalyser();
-      la.setAutomata(fsa);
-      expect(la.lexico("abaa ")).toEqual("id");
-      expect(la.lexico("  abaa")).toEqual("del");
+      it("Should throw when there is a 0 in first state", function(){
+         var fsm = new FiniteStateMachine();
+         fsm.addState(1);
+         fsm.addState("del");
+         fsm.addFinalState("del");
+         fsm.addState("id");
+         fsm.addFinalState("id");
+         fsm.addState(3);
+         fsm.addFinalState(1);
+         fsm.addTransition(1,"del",[" ","\t","\n"]);
+         fsm.addTransition("del","del",[" ","\t","\n"]);
+         fsm.addTransition(1,"id",["a","b","c"]);
+         fsm.addTransition("id","id",["a","b","c"]);
 
-   });
-   it("Should return a number when a string with beginning spaces are parsed", function(){
-      var la = new LexicalAnalyser();
-      la.addState(1);
-      la.addState(2);
-      la.addTransition(1,1," ");
-      la.addTransition(1,2,"1");
-      la.addTransition(1,2,"2");
-      la.addTransition(2,2,"1");
-      la.addTransition(2,2,"2");
-      la.addFinalState(2);
-      expect(la.parse("  121")).toEqual("121");
-   });
+         expect(function(){fsm.isMatchString(" ")}).not.toThrow();
+         expect(function(){fsm.isMatchString(" \t")}).not.toThrow();
+         expect(function(){fsm.isMatchString("\n \t")}).not.toThrow();
+         expect(function(){fsm.isMatchString("a")}).not.toThrow();
+         expect(function(){fsm.isMatchString("abc")}).not.toThrow();
+         expect(function(){fsm.isMatchString("cba")}).not.toThrow();
+         expect(function(){fsm.isMatchString(" cba")}).toThrow();
+         expect(function(){fsm.isMatchString("cb a")}).toThrow();
+
+         var la = new LexicalAnalyser();
+         la.setMachine(fsm);
+         expect(la.isLexicalCorrect("abc\taba")).toBeTruthy();
+         //expect(la.machine.getCurrentSymbolCounter()).toEqual(4);
+         expect(la.isLexicalCorrect("  abc  a")).toBeTruthy();
+         //expect(la.machine.getCurrentSymbolCounter()).toEqual(3);
+         expect(la.isLexicalCorrect("abc")).toBeTruthy();
+         expect(la.isLexicalCorrect(" aa")).toBeTruthy();
+         expect(la.isLexicalCorrect(" aa")).toBeTruthy();
+         expect(la.isLexicalCorrect(" xa")).toBeFalsy();
+
+      });
 
 });

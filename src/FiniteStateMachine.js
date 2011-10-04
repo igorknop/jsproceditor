@@ -2,6 +2,7 @@ function FiniteStateMachine(){
    this.states = new Array();
    this.initialState = null;
    this.currentState = null;
+   this.currentSymbolCounter = 0;
    this.finalStates = new Array();
    this.transitions = new Array();
 }
@@ -47,6 +48,11 @@ FiniteStateMachine.prototype.getState = function (state) {
 };
 
 FiniteStateMachine.prototype.addTransition = function (from, to, transition) {
+   if(transition.push){
+      for(var i=0; i<transition.length; i++){
+         this.addTransition(from, to, transition[i]);
+      }
+   }
    if (this.states[from]===undefined){
       throw new ReferenceError("State "+from+" is not defined!");
    }
@@ -90,7 +96,7 @@ FiniteStateMachine.prototype.setCurrentState = function (state) {
    this.currentState = state;
 };
 
-FiniteStateMachine.prototype.transition = function (q, alphabet) {
+FiniteStateMachine.prototype.transition = function (n,q, alphabet) {
    if(alphabet.length===undefined){
       throw new TypeError("Alphabet should be an array: "+alphabet+"!");
    }
@@ -99,13 +105,17 @@ FiniteStateMachine.prototype.transition = function (q, alphabet) {
       return this.getCurrentState();
    }
    var t = alphabet.shift();
-   
-   return this.transition(this.moveToNextState(t), alphabet);
+   this.currentSymbolCounter = n+1;
+   return this.transition(n+1,this.moveToNextState(t), alphabet);
 };
 
-FiniteStateMachine.prototype.isMatchArray = function (alphabet) {
-   var state = this.transition(this.getInitialState(), alphabet);
+FiniteStateMachine.prototype.isAFinalState = function (state) {
    return this.finalStates[state]!==undefined;
+};
+FiniteStateMachine.prototype.isMatchArray = function (alphabet) {
+   var state = this.transition(0,this.getInitialState(), alphabet);
+   this.currentSymbolCounter=0;
+   return this.isAFinalState(state);
 };
 
 FiniteStateMachine.prototype.isMatchString = function (text) {
@@ -123,3 +133,7 @@ FiniteStateMachine.prototype.transitionString = function (text) {
    }   
    return this.transition(this.getInitialState(),alphabet);
 };
+
+FiniteStateMachine.prototype.getCurrentSymbolCounter = function () {
+   return this.currentSymbolCounter;
+}
