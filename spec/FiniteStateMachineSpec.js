@@ -1,7 +1,7 @@
-describe ("Finite State Automata", function(){
+describe ("Finite State Machine", function(){
    var fsa;
    beforeEach(function(){
-      fsa = new FiniteStateAutomata();
+      fsa = new FiniteStateMachine();
    });
    it("Should have a state on his state list after add a new state",function(){
       fsa.addState("1");

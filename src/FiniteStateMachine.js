@@ -1,4 +1,4 @@
-function FiniteStateAutomata(){
+function FiniteStateMachine(){
    this.states = new Array();
    this.initialState = null;
    this.currentState = null;
@@ -6,29 +6,29 @@ function FiniteStateAutomata(){
    this.transitions = new Array();
 }
 
-FiniteStateAutomata.prototype.setInitialState = function (state) {
+FiniteStateMachine.prototype.setInitialState = function (state) {
    if (this.states[state]===undefined){
       throw new ReferenceError("Invalid initial state!");
    }
    this.initialState = state;
 };
 
-FiniteStateAutomata.prototype.getInitialState = function () {
+FiniteStateMachine.prototype.getInitialState = function () {
    return this.initialState;
 };
 
-FiniteStateAutomata.prototype.addFinalState = function (state) {
+FiniteStateMachine.prototype.addFinalState = function (state) {
    if (this.states[state]===undefined){
       throw new ReferenceError("Invalid final state:"+state+"!");
    }
    this.finalStates[state] = state;
 };
 
-FiniteStateAutomata.prototype.getFinalStates = function () {
+FiniteStateMachine.prototype.getFinalStates = function () {
    return this.finalStates;
 };
 
-FiniteStateAutomata.prototype.addState = function (state) {
+FiniteStateMachine.prototype.addState = function (state) {
    if (this.states[state]!==undefined){
       throw new ReferenceError("State already defined!");
    }
@@ -38,14 +38,14 @@ FiniteStateAutomata.prototype.addState = function (state) {
    }
 };
 
-FiniteStateAutomata.prototype.getState = function (state) {
+FiniteStateMachine.prototype.getState = function (state) {
    if (this.states[state]===undefined){
       throw new ReferenceError("State is not defined!");
    }
    return this.states[state];
 };
 
-FiniteStateAutomata.prototype.addTransition = function (from, to, transition) {
+FiniteStateMachine.prototype.addTransition = function (from, to, transition) {
    if (this.states[from]===undefined){
       throw new ReferenceError("State "+from+" is not defined!");
    }
@@ -58,7 +58,7 @@ FiniteStateAutomata.prototype.addTransition = function (from, to, transition) {
    this.transitions[from][transition] = to;
 };
 
-FiniteStateAutomata.prototype.testTransition = function (from, to, transition){
+FiniteStateMachine.prototype.testTransition = function (from, to, transition){
    try {
       if (this.transitions[from][transition]===to){
          return true;
@@ -68,7 +68,7 @@ FiniteStateAutomata.prototype.testTransition = function (from, to, transition){
    }
 };
 
-FiniteStateAutomata.prototype.nextState = function (current,transition){
+FiniteStateMachine.prototype.nextState = function (current,transition){
    try {
       if (this.transitions[current][transition]!==undefined){
          return this.transitions[current][transition];
@@ -78,18 +78,18 @@ FiniteStateAutomata.prototype.nextState = function (current,transition){
    }
 };
 
-FiniteStateAutomata.prototype.getCurrentState = function (){
+FiniteStateMachine.prototype.getCurrentState = function (){
    return this.currentState;
 };
 
-FiniteStateAutomata.prototype.setCurrentState = function (state) {
+FiniteStateMachine.prototype.setCurrentState = function (state) {
    if (this.states[state]===undefined){
       throw new ReferenceError("Invalid current state: "+state+"!");
    }
    this.currentState = state;
 };
 
-FiniteStateAutomata.prototype.transition = function (q, alphabet) {
+FiniteStateMachine.prototype.transition = function (q, alphabet) {
    if(alphabet.length===undefined){
       throw new TypeError("Alphabet should be an array: "+alphabet+"!");
    }
@@ -101,12 +101,12 @@ FiniteStateAutomata.prototype.transition = function (q, alphabet) {
    return this.transition(this.nextState(q,t), alphabet);
 };
 
-FiniteStateAutomata.prototype.isMatchArray = function (alphabet) {
+FiniteStateMachine.prototype.isMatchArray = function (alphabet) {
    var state = this.transition(this.initialState, alphabet);
    return this.finalStates[state]!==undefined;
 };
 
-FiniteStateAutomata.prototype.isMatchString = function (text) {
+FiniteStateMachine.prototype.isMatchString = function (text) {
    var alphabet = new Array();   
    for(var i=0; i<text.length; i++){
       alphabet.push(text[i]);
@@ -114,7 +114,7 @@ FiniteStateAutomata.prototype.isMatchString = function (text) {
    return this.isMatchArray(alphabet);
 };
 
-FiniteStateAutomata.prototype.transitionString = function (text) {
+FiniteStateMachine.prototype.transitionString = function (text) {
    var alphabet = new Array();   
    for(var i=0; i<text.length; i++){
       alphabet.push(text[i]);
