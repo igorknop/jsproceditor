@@ -88,7 +88,7 @@ describe ("Finite State Machine", function(){
       fsm.addState(1);
       fsm.addState(2);
       fsm.addTransition(1, 2, "a");
-      expect(fsm.moveToNextState("a")).toEqual(2);      
+      expect(fsm.getNextState("a")).toEqual(2);      
    });
 
    it("Should have current state null when created", function(){
@@ -117,19 +117,8 @@ describe ("Finite State Machine", function(){
       fsm.setInitialState(1);
       fsm.addFinalState(2);
       fsm.addTransition(1,2,"a");
-      expect(fsm.transition(0, fsm.getInitialState(), [])).toEqual(1);
-      expect(fsm.transition(0, fsm.getInitialState(), ["a"])).toEqual(2);
-   });
-
-   it("Should have current counter 2 when '001' tested", function(){
-      fsm.addState(1);
-      fsm.addState(2);
-      fsm.addTransition(1,2,"0");
-      fsm.addFinalState(2);
-      try {
-         fsm.isMatchString("001");
-      } catch (e) {}
-      expect(fsm.getCurrentSymbolCounter()).toEqual(2);
+      expect(fsm.transition(fsm.getInitialState(), [])).toEqual(1);
+      expect(fsm.transition(fsm.getInitialState(), ["a"])).toEqual(2);
    });
 
    describe("Examples", function(){

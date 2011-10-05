@@ -1,4 +1,18 @@
 describe("Lexical Analyser", function(){
+   var fsmIDandDel;
+   beforeEach(function(){
+         fsmIDandDel = new FiniteStateMachine();
+         fsmIDandDel.addState(1);
+         fsmIDandDel.addState("del");
+         fsmIDandDel.addFinalState("del");
+         fsmIDandDel.addState("id");
+         fsmIDandDel.addFinalState("id");
+         fsmIDandDel.addTransition(1,"del",[" ","\t","\n"]);
+         fsmIDandDel.addTransition("del","del",[" ","\t","\n"]);
+         fsmIDandDel.addTransition(1,"id",["a","b","c"]);
+         fsmIDandDel.addTransition("id","id",["a","b","c"]);
+
+   });
       /*
       it("Should throw when there is a 0 in first state", function(){
          var fsm = new FiniteStateMachine();
@@ -79,6 +93,7 @@ describe("Lexical Analyser", function(){
 
       it("It should return incremented Last Symbol Position when consuming symbol", function(){
          var la = new LexicalAnalyser();
+         expect(la.getLastSymbolPosition()).toEqual(0);
          la.setText("(a|b);c");
          la.consumeSymbol();
          expect(la.getLastSymbolPosition()).toEqual(1);
@@ -96,6 +111,68 @@ describe("Lexical Analyser", function(){
          expect(la.consumeSymbol()).toEqual("|");
       });
 
+      it("Should increment column when consuming a symbol",function(){
+
+         var la = new LexicalAnalyser();
+         la.setText("(a|b);c");
+         expect(la.getColumn()).toEqual(0);
+         la.consumeSymbol();
+         expect(la.getColumn()).toEqual(1);
+         la.consumeSymbol();
+         la.consumeSymbol();
+         expect(la.getColumn()).toEqual(3);
+      });
+      it("Should increment row, set column to 0 when consuming a \\n symbol", function(){
+
+         var la = new LexicalAnalyser();
+         la.setText("(\na\n|b);c");
+         expect(la.getColumn()).toEqual(0);
+         expect(la.getRow()).toEqual(0);
+         la.consumeSymbol();
+         expect(la.getColumn()).toEqual(1);
+         expect(la.getRow()).toEqual(0);
+         la.consumeSymbol();
+         la.consumeSymbol();
+         expect(la.getColumn()).toEqual(1);
+         expect(la.getRow()).toEqual(1);
+         la.consumeSymbol();
+         expect(la.getColumn()).toEqual(0);
+         expect(la.getRow()).toEqual(2);
+      });
+
+      it("Should return 'id' when execute for first time on 'a   a'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("a   a");
+         la.run();
+         expect(la.getLastState()).toEqual("id");
+      });
+
+      it("Should return have last symbol position 1 when execute for first time on 'a   a'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("a   a");
+         la.run();
+         expect(la.getLastSymbolPosition()).toEqual(1);
+      });
+
+      it("Should return 'del' when execute for first time on '   a'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("   a");
+         la.run();
+         expect(la.getLastState()).toEqual("del");
+      });
+
+      it("Should return 'del' when execute for second time on 'a   a'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("aa   aa");
+         la.run();
+         expect(la.getLastState()).toEqual("id");
+         la.run();
+         expect(la.getLastState()).toEqual("del");
+      });
       //it("",function(){});
 });
 

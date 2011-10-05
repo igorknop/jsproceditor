@@ -2,7 +2,6 @@ function FiniteStateMachine(){
    this.states = new Array();
    this.initialState = null;
    this.currentState = null;
-   this.currentSymbolCounter = 0;
    this.finalStates = new Array();
    this.transitions = new Array();
 }
@@ -11,8 +10,8 @@ FiniteStateMachine.prototype.setInitialState = function (state) {
    if (this.states[state]===undefined){
       throw new ReferenceError("Invalid initial state!");
    }
-   this.setCurrentState(state);
    this.initialState = state;
+   this.setCurrentState(this.initialState);
 };
 
 FiniteStateMachine.prototype.getInitialState = function () {
@@ -75,7 +74,7 @@ FiniteStateMachine.prototype.testTransition = function (from, to, transition){
    }
 };
 
-FiniteStateMachine.prototype.moveToNextState = function (transition){
+FiniteStateMachine.prototype.getNextState = function (transition){
    try {
       if (this.transitions[this.getCurrentState()][transition]!==undefined){
          return this.transitions[this.getCurrentState()][transition];
@@ -96,7 +95,7 @@ FiniteStateMachine.prototype.setCurrentState = function (state) {
    this.currentState = state;
 };
 
-FiniteStateMachine.prototype.transition = function (n,q, alphabet) {
+FiniteStateMachine.prototype.transition = function (q, alphabet) {
    if(alphabet.length===undefined){
       throw new TypeError("Alphabet should be an array: "+alphabet+"!");
    }
@@ -105,15 +104,14 @@ FiniteStateMachine.prototype.transition = function (n,q, alphabet) {
       return this.getCurrentState();
    }
    var t = alphabet.shift();
-   this.currentSymbolCounter = n+1;
-   return this.transition(n+1,this.moveToNextState(t), alphabet);
+   return this.transition(this.getNextState(t), alphabet);
 };
 
 FiniteStateMachine.prototype.isAFinalState = function (state) {
    return this.finalStates[state]!==undefined;
 };
 FiniteStateMachine.prototype.isMatchArray = function (alphabet) {
-   var state = this.transition(0,this.getInitialState(), alphabet);
+   var state = this.transition(this.getInitialState(), alphabet);
    this.currentSymbolCounter=0;
    return this.isAFinalState(state);
 };
@@ -134,6 +132,10 @@ FiniteStateMachine.prototype.transitionString = function (text) {
    return this.transition(this.getInitialState(),alphabet);
 };
 
-FiniteStateMachine.prototype.getCurrentSymbolCounter = function () {
-   return this.currentSymbolCounter;
-}
+FiniteStateMachine.prototype.moveToNextState = function (transition) {
+      if (this.transitions[this.getCurrentState()][transition]!==undefined){
+         this.setCurrentState(this.transitions[this.getCurrentState()][transition])
+      } else {
+         throw new ReferenceError("Transition '"+transition+"' is impossible from state '"+this.getCurrentState()+"'!");
+      }
+};

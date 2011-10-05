@@ -3,27 +3,19 @@ function LexicalAnalyser () {
    this.text = '';
    this.firstSymbolPosition = 0;
    this.lastSymbolPosition = 0;
+   this.column = 0;
+   this.row = 0;
 };
 
 LexicalAnalyser.prototype.getMachine = function (){
    return this.machine;
 };
+
 LexicalAnalyser.prototype.setMachine = function (machine){
    if(!machine.addState||!machine.isMatchString){
       throw new TypeError("Machine should be an FiniteStateMachine object!");
    }
    this.machine = machine;
-};
-
-LexicalAnalyser.prototype.isLexicalCorrect = function (text){
-   this.machine.setCurrentState(this.machine.getInitialState());
-   var i = 0;
-   var c = text[i];
-   while(i<text.length){
-      this.machine.moveToNextState(c);
-      c = text[++i];
-   }
-   return this.machine.isAFinalState(this.machine.setCurrentState());
 };
 
 LexicalAnalyser.prototype.getText = function (){
@@ -51,5 +43,41 @@ LexicalAnalyser.prototype.getLastSymbolPosition = function (){
 };
 
 LexicalAnalyser.prototype.consumeSymbol = function (){
-   return this.text[this.lastSymbolPosition++];
+   if(this.lastSymbolPosition >= this.text.length){
+      throw new RangeError("Cannot consume more symbols: end of text reached!");
+   }
+   var c = this.text[this.lastSymbolPosition++];
+   if(c==="\n"){
+      this.column = 0
+      this.row++;
+   } else {
+      this.column++;
+   }
+   return c;
+};
+
+LexicalAnalyser.prototype.getColumn = function (){
+   return this.column;
+};
+
+LexicalAnalyser.prototype.getRow = function (){
+   return this.row;
+};
+
+LexicalAnalyser.prototype.run = function (){
+   var c;
+   this.machine.setCurrentState(this.machine.getInitialState());
+   while(true){
+         c = this.consumeSymbol();
+      try {
+         this.machine.moveToNextState(c);
+      } catch(e) {
+         this.setFirstSymbolPosition(this.getLastSymbolPosition()-1);
+         return;
+      }
+   }
+};
+
+LexicalAnalyser.prototype.getLastState = function (){
+   return this.machine.getCurrentState();
 };
