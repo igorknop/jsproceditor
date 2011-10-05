@@ -137,5 +137,6 @@ FiniteStateMachine.prototype.moveToNextState = function (transition) {
          this.setCurrentState(this.transitions[this.getCurrentState()][transition])
       } else {
          throw new ReferenceError("Transition '"+transition+"' is impossible from state '"+this.getCurrentState()+"'!");
+         
       }
 };

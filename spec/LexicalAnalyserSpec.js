@@ -164,7 +164,7 @@ describe("Lexical Analyser", function(){
          expect(la.getLastState()).toEqual("del");
       });
 
-      it("Should return 'del' when execute for second time on 'a   a'", function(){
+      it("Should return 'del' when execute for second time on 'aa   aa'", function(){
          var la = new LexicalAnalyser();
          la.setMachine(fsmIDandDel);
          la.setText("aa   aa");
@@ -172,6 +172,71 @@ describe("Lexical Analyser", function(){
          expect(la.getLastState()).toEqual("id");
          la.run();
          expect(la.getLastState()).toEqual("del");
+      });
+
+      it("Should return 'id' when execute for third time on 'aa   aa'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("aa   aa");
+         la.run();
+         expect(la.getLastState()).toEqual("id");
+         la.run();
+         expect(la.getLastState()).toEqual("del");
+         la.run();
+         expect(la.getLastState()).toEqual("id");
+      });
+
+      it("Should return false when execute for second time on 'abx'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("abx");
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeFalsy();
+      });
+
+      it("Should return false when execute for third time on 'ab x ba'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("ba x ab");
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeFalsy();
+      });
+
+      it("Should return false when execute for sixth time on 'aaa bbab  bax'", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         la.setText("aaa bbab  bax");
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeTruthy();
+         la.run();
+         expect(la.isLastStateValid()).toBeFalsy();
+      });
+      it("Should return true when setence are lexicaly valid", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmIDandDel);
+         expect(la.isLexicalyValid("aaa bbab")).toBeTruthy();
+         expect(la.isLexicalyValid("aaba")).toBeTruthy();
+         expect(la.isLexicalyValid("  ")).toBeTruthy();
+         expect(la.isLexicalyValid(" bbab  ")).toBeTruthy();
+         expect(la.isLexicalyValid("aax ")).toBeFalsy();
+         expect(la.isLexicalyValid(" axaa")).toBeFalsy();
+         expect(la.isLexicalyValid("aaa bxbab")).toBeFalsy();
+         expect(la.isLexicalyValid("aaa bbab  bax")).toBeFalsy();
+         
       });
       //it("",function(){});
 });

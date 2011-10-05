@@ -68,8 +68,8 @@ LexicalAnalyser.prototype.run = function (){
    var c;
    this.machine.setCurrentState(this.machine.getInitialState());
    while(true){
-         c = this.consumeSymbol();
       try {
+         c = this.consumeSymbol();
          this.machine.moveToNextState(c);
       } catch(e) {
          this.setFirstSymbolPosition(this.getLastSymbolPosition()-1);
@@ -80,4 +80,24 @@ LexicalAnalyser.prototype.run = function (){
 
 LexicalAnalyser.prototype.getLastState = function (){
    return this.machine.getCurrentState();
+};
+
+LexicalAnalyser.prototype.isLastStateValid = function (){
+   return this.machine.isAFinalState(this.machine.getCurrentState());
+};
+
+
+LexicalAnalyser.prototype.isLexicalyValid = function (text){
+   this.setText(text+"\n");
+   this.setFirstSymbolPosition(0);
+   var i =0;
+   while(this.getFirstSymbolPosition()<this.getText().length-1){
+
+      this.run();
+      console.log(this.getFirstSymbolPosition(), this.getText().length);
+      if(!this.isLastStateValid()){
+         return false;
+      }
+   }
+   return true;
 };
