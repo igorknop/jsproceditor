@@ -1,5 +1,7 @@
 describe("Lexical Analyser", function(){
    var fsmIDandDel;
+   var fsmPar;
+
    beforeEach(function(){
          fsmIDandDel = new FiniteStateMachine();
          fsmIDandDel.addState(1);
@@ -11,6 +13,31 @@ describe("Lexical Analyser", function(){
          fsmIDandDel.addTransition("del","del",[" ","\t","\n"]);
          fsmIDandDel.addTransition(1,"id",["a","b","c"]);
          fsmIDandDel.addTransition("id","id",["a","b","c"]);
+
+         fsmPar = new FiniteStateMachine();
+         fsmPar.addState(1);
+         fsmPar.addState("delimiter");
+         fsmPar.addFinalState("delimiter");
+         fsmPar.addState("id");
+         fsmPar.addFinalState("id");
+         fsmPar.addState("sequence");
+         fsmPar.addFinalState("sequence");
+         fsmPar.addState("lParentesis");
+         fsmPar.addFinalState("lParentesis");
+         fsmPar.addState("rParentesis");
+         fsmPar.addFinalState("rParentesis");
+         fsmPar.addState("pipe");
+         fsmPar.addState("parallel");
+         fsmPar.addFinalState("parallel");
+         fsmPar.addTransition(1,"delimiter",[" ","\t","\n"]);
+         fsmPar.addTransition("delimiter","delimiter",[" ","\t","\n"]);
+         fsmPar.addTransition(1,"id",["a","b","c"]);
+         fsmPar.addTransition("id","id",["a","b","c"]);
+         fsmPar.addTransition(1,"sequence",[";"]);
+         fsmPar.addTransition("pipe","parallel",["|"]);
+         fsmPar.addTransition(1, "pipe",["|"]);
+         fsmPar.addTransition(1, "lParentesis",["("]);
+         fsmPar.addTransition(1, "rParentesis",[")"]);
 
    });
       /*
@@ -225,6 +252,7 @@ describe("Lexical Analyser", function(){
          la.run();
          expect(la.isLastStateValid()).toBeFalsy();
       });
+
       it("Should return true when setence are lexicaly valid", function(){
          var la = new LexicalAnalyser();
          la.setMachine(fsmIDandDel);
@@ -235,7 +263,48 @@ describe("Lexical Analyser", function(){
          expect(la.isLexicalyValid("aax ")).toBeFalsy();
          expect(la.isLexicalyValid(" axaa")).toBeFalsy();
          expect(la.isLexicalyValid("aaa bxbab")).toBeFalsy();
-         expect(la.isLexicalyValid("aaa bbab  bax")).toBeFalsy();
+         expect(la.isLexicalyValid("aaa bbab  ba x")).toBeFalsy();
+         
+      });
+
+      it("Should return true when setence are lexicaly valid", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmPar);
+         expect(la.isLexicalyValid("a")).toBeTruthy();
+         expect(la.isLexicalyValid("a b")).toBeTruthy();
+         expect(la.isLexicalyValid("a;b")).toBeTruthy();
+         expect(la.isLexicalyValid("a;b;c")).toBeTruthy();
+         expect(la.isLexicalyValid("a||b")).toBeTruthy();
+         expect(la.isLexicalyValid("a||b;c")).toBeTruthy();
+         expect(la.isLexicalyValid("(a||b);c")).toBeTruthy();
+         expect(la.isLexicalyValid("a || ( b;c )")).toBeTruthy();
+         expect(la.isLexicalyValid("/")).toBeFalsy();
+         expect(la.isLexicalyValid("a,a")).toBeFalsy();
+         expect(la.isLexicalyValid("a|b")).toBeFalsy();
+         expect(la.isLexicalyValid("a ; b | c")).toBeFalsy();
+         
+      });
+      it("Should return symbol position when setence are lexicaly invalid", function(){
+         var la = new LexicalAnalyser();
+         la.setMachine(fsmPar);
+         expect(la.isLexicalyValid("a")).toBeTruthy();
+         expect(la.isLexicalyValid("a b")).toBeTruthy();
+         expect(la.isLexicalyValid("a;b")).toBeTruthy();
+         expect(la.isLexicalyValid("a;b;c")).toBeTruthy();
+         expect(la.isLexicalyValid("a||b")).toBeTruthy();
+         expect(la.isLexicalyValid("a||b;c")).toBeTruthy();
+         expect(la.isLexicalyValid("/")).toBeFalsy();
+         expect(la.getColumn()).toEqual(0);
+         expect(la.getRow()).toEqual(0);
+         expect(la.isLexicalyValid("a,a")).toBeFalsy();
+         expect(la.getColumn()).toEqual(1);
+         expect(la.getRow()).toEqual(0);
+         expect(la.isLexicalyValid("a|b")).toBeFalsy();
+         expect(la.getColumn()).toEqual(2);
+         expect(la.getRow()).toEqual(0);
+         expect(la.isLexicalyValid("a ;\nb | c")).toBeFalsy();
+         expect(la.getColumn()).toEqual(3);
+         expect(la.getRow()).toEqual(1);
          
       });
       //it("",function(){});

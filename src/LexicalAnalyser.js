@@ -47,10 +47,11 @@ LexicalAnalyser.prototype.consumeSymbol = function (){
       throw new RangeError("Cannot consume more symbols: end of text reached!");
    }
    var c = this.text[this.lastSymbolPosition++];
+   
    if(c==="\n"){
-      this.column = 0
+      this.column = 0;
       this.row++;
-   } else {
+   }else{
       this.column++;
    }
    return c;
@@ -73,6 +74,7 @@ LexicalAnalyser.prototype.run = function (){
          this.machine.moveToNextState(c);
       } catch(e) {
          this.setFirstSymbolPosition(this.getLastSymbolPosition()-1);
+         this.column = --this.column<0?0:this.column;
          return;
       }
    }
@@ -90,11 +92,12 @@ LexicalAnalyser.prototype.isLastStateValid = function (){
 LexicalAnalyser.prototype.isLexicalyValid = function (text){
    this.setText(text+"\n");
    this.setFirstSymbolPosition(0);
-   var i =0;
+   this.column = 0;
+   this.row = 0;
    while(this.getFirstSymbolPosition()<this.getText().length-1){
 
       this.run();
-      console.log(this.getFirstSymbolPosition(), this.getText().length);
+      //console.log(this.getFirstSymbolPosition(), this.getText().length);
       if(!this.isLastStateValid()){
          return false;
       }
