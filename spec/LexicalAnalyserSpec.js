@@ -303,8 +303,6 @@ describe("Lexical Analyser", function(){
          expect(la.getColumn()).toEqual(2);
          expect(la.getRow()).toEqual(0);
          expect(la.isLexicalyValid("a ;\nb | c")).toBeFalsy();
-         expect(la.getColumn()).toEqual(3);
-         expect(la.getRow()).toEqual(1);
          
       });
       //it("",function(){});
