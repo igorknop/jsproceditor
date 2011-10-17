@@ -1,8 +1,12 @@
 describe("Lexical Analyser", function(){
    var fsmIDandDel;
    var fsmPar;
+   var fsmEq;
 
    beforeEach(function(){
+	 var letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z","A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+	 var numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
          fsmIDandDel = new FiniteStateMachine();
          fsmIDandDel.addState(1);
          fsmIDandDel.addState("del");
@@ -38,6 +42,57 @@ describe("Lexical Analyser", function(){
          fsmPar.addTransition(1, "pipe",["|"]);
          fsmPar.addTransition(1, "lParentesis",["("]);
          fsmPar.addTransition(1, "rParentesis",[")"]);
+
+	 fsmEq = new FiniteStateMachine();
+         fsmEq.addState("initial");
+
+         fsmEq.addState("delimiter");
+         fsmEq.addFinalState("delimiter");
+         fsmEq.addTransition("initial","delimiter",[" ","\t","\n"]);
+         fsmEq.addTransition("delimiter","delimiter",[" ","\t","\n"]);
+
+         fsmEq.addState("id");
+         fsmEq.addFinalState("id");
+	 fsmEq.addTransition("initial","id", letters);
+	 fsmEq.addTransition("initial","id", "_");
+         fsmEq.addTransition("id","id", letters);
+         fsmEq.addTransition("id","id", "_");
+
+         fsmEq.addState("parentesis left");
+         fsmEq.addFinalState("parentesis left");
+         fsmEq.addState("parentesis right");
+         fsmEq.addFinalState("parentesis right");
+	 
+         fsmEq.addState("integer");
+         fsmEq.addFinalState("integer");
+	 fsmEq.addTransition("initial","integer", numbers);
+	 fsmEq.addTransition("integer","integer", numbers);
+
+         fsmEq.addState("float");
+         fsmEq.addState("float dot");
+         fsmEq.addFinalState("float");
+	 fsmEq.addTransition("integer","float dot", ".");
+	 fsmEq.addTransition("float dot", "float", numbers);
+	 fsmEq.addTransition("float", "float", numbers);
+
+         fsmEq.addTransition("initial", "parentesis left",["("]);
+         fsmEq.addTransition("initial", "parentesis right",[")"]);
+
+         fsmEq.addState("plus");
+         fsmEq.addFinalState("plus");
+	 fsmEq.addTransition("initial","plus", "+");
+
+         fsmEq.addState("minus");
+         fsmEq.addFinalState("minus");
+	 fsmEq.addTransition("initial","minus", "-");
+
+         fsmEq.addState("asterisk");
+         fsmEq.addFinalState("asterisk");
+	 fsmEq.addTransition("initial","asterisk", "*");
+
+         fsmEq.addState("slash");
+         fsmEq.addFinalState("slash");
+	 fsmEq.addTransition("initial","slash", "/");
 
    });
       /*
@@ -304,6 +359,46 @@ describe("Lexical Analyser", function(){
          expect(la.getRow()).toEqual(0);
          expect(la.isLexicalyValid("a ;\nb | c")).toBeFalsy();
          
+      });
+
+      describe("Equation example", function(){
+	      it("Should return true when a equation have a lexicaly correct id", function(){
+		var la = new LexicalAnalyser();
+		la.setMachine(fsmEq);
+		expect(la.isLexicalyValid("value")).toBeTruthy();
+		expect(la.isLexicalyValid("$value")).toBeFalsy();
+		expect(la.isLexicalyValid("new_value")).toBeTruthy();
+		expect(la.isLexicalyValid("_value")).toBeTruthy();
+	      });
+	      it("Should return true when a equation have lexicaly correct use of parentesis", function(){
+		var la = new LexicalAnalyser();
+		la.setMachine(fsmEq);
+		expect(la.isLexicalyValid("sin()")).toBeTruthy();
+	      });
+	      it("Should return true when a equation is lexicaly correct integer", function(){
+		var la = new LexicalAnalyser();
+		la.setMachine(fsmEq);
+		expect(la.isLexicalyValid("23")).toBeTruthy();
+		expect(la.isLexicalyValid("1 23 56")).toBeTruthy();
+		expect(la.isLexicalyValid("2 23")).toBeTruthy();
+	      });
+	      it("Should return true when a equation have lexicaly correct floats", function(){
+		var la = new LexicalAnalyser();
+		la.setMachine(fsmEq);
+		expect(la.isLexicalyValid("2.3")).toBeTruthy();
+		expect(la.isLexicalyValid("2.31231")).toBeTruthy();
+		expect(la.isLexicalyValid(".31231")).toBeFalsy();
+		expect(la.isLexicalyValid("21.")).toBeFalsy();
+		expect(la.isLexicalyValid("21. 1231")).toBeFalsy();
+		expect(la.isLexicalyValid("(1.234)")).toBeTruthy();
+	      });
+	      it("Should return true when a equation is lexicaly correct algebraic operators", function(){
+		var la = new LexicalAnalyser();
+		la.setMachine(fsmEq);
+		expect(la.isLexicalyValid("2+3")).toBeTruthy();
+		expect(la.isLexicalyValid("2/31-231")).toBeTruthy();
+		expect(la.isLexicalyValid("31+(2*31)")).toBeTruthy();
+	      });
       });
       //it("",function(){});
 });
