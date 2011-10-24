@@ -56,12 +56,15 @@ describe("Lexical Analyser", function(){
 	 fsmEq.addTransition("initial","id", letters);
 	 fsmEq.addTransition("initial","id", "_");
          fsmEq.addTransition("id","id", letters);
+         fsmEq.addTransition("id","id", numbers);
          fsmEq.addTransition("id","id", "_");
 
          fsmEq.addState("parentesis left");
          fsmEq.addFinalState("parentesis left");
          fsmEq.addState("parentesis right");
          fsmEq.addFinalState("parentesis right");
+         fsmEq.addTransition("initial", "parentesis left",["("]);
+         fsmEq.addTransition("initial", "parentesis right",[")"]);
 	 
          fsmEq.addState("integer");
          fsmEq.addFinalState("integer");
@@ -75,8 +78,6 @@ describe("Lexical Analyser", function(){
 	 fsmEq.addTransition("float dot", "float", numbers);
 	 fsmEq.addTransition("float", "float", numbers);
 
-         fsmEq.addTransition("initial", "parentesis left",["("]);
-         fsmEq.addTransition("initial", "parentesis right",[")"]);
 
          fsmEq.addState("plus");
          fsmEq.addFinalState("plus");
@@ -369,6 +370,7 @@ describe("Lexical Analyser", function(){
 		expect(la.isLexicalyValid("$value")).toBeFalsy();
 		expect(la.isLexicalyValid("new_value")).toBeTruthy();
 		expect(la.isLexicalyValid("_value")).toBeTruthy();
+		expect(la.isLexicalyValid("_v4lu3")).toBeTruthy();
 	      });
 	      it("Should return true when a equation have lexicaly correct use of parentesis", function(){
 		var la = new LexicalAnalyser();
@@ -387,6 +389,7 @@ describe("Lexical Analyser", function(){
 		la.setMachine(fsmEq);
 		expect(la.isLexicalyValid("2.3")).toBeTruthy();
 		expect(la.isLexicalyValid("2.31231")).toBeTruthy();
+		expect(la.isLexicalyValid("2.312.31")).toBeFalsy();
 		expect(la.isLexicalyValid(".31231")).toBeFalsy();
 		expect(la.isLexicalyValid("21.")).toBeFalsy();
 		expect(la.isLexicalyValid("21. 1231")).toBeFalsy();
