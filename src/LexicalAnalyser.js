@@ -5,7 +5,7 @@ function LexicalAnalyser () {
    this.lastSymbolPosition = 0;
    this.column = 0;
    this.row = 0;
-};
+}
 
 LexicalAnalyser.prototype.getMachine = function (){
    return this.machine;
@@ -23,7 +23,7 @@ LexicalAnalyser.prototype.getText = function (){
 };
 
 LexicalAnalyser.prototype.setText = function (newText){
-   return this.text = newText;
+   this.text = newText;
 };
 
 LexicalAnalyser.prototype.setFirstSymbolPosition = function (newFirstPos){
