@@ -23,6 +23,11 @@ LexicalAnalyser.prototype.getText = function (){
 };
 
 LexicalAnalyser.prototype.setText = function (newText){
+   this.firstSymbolPosition = 0;
+   this.lastSymbolPosition = 0;
+   this.column = 0;
+   this.row = 0;
+   this.machine.setCurrentState(this.machine.getInitialState());
    return this.text = newText;
 };
 

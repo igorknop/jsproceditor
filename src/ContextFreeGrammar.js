@@ -16,6 +16,20 @@ Grammar.prototype.addProduction = function(prodName, prod){
     this.productions[prodName].push(prod);
 };
 
+Grammar.prototype.FIRST = function(nt){
+	var terms = [];
+	for(var i=0; i< this.productions[nt].length; i++){
+		if(this.productions[nt][i][0].getSymbol){
+			terms.push(this.productions[nt][i][0]);
+		} else {
+			terms = terms.concat(this.FIRST(this.productions[nt][i][0].getName()));
+		}
+	}
+	return terms;
+};
+
+
+
 /**
  *  Terminal
  **/
@@ -43,3 +57,4 @@ function NonTerminal(name){
 NonTerminal.prototype.getName = function(){
     return this.name;
 };
+
