@@ -145,6 +145,7 @@ describe("Lexical Analyser", function(){
 
       it("It should have a non empty text when setting the text", function(){
          var la = new LexicalAnalyser();
+	 la.setMachine(fsmIDandDel);
          la.setText("(a|b);c")
          expect(la.getText()).toBe("(a|b);c");
       });
@@ -161,6 +162,7 @@ describe("Lexical Analyser", function(){
 
       it("It should have Last an First Symbol Position equals when setting first symbol position", function(){
          var la = new LexicalAnalyser();
+	 la.setMachine(fsmIDandDel);
          la.setText("(a|b);c");
          la.setFirstSymbolPosition(3);
          expect(la.getFirstSymbolPosition()).toBe(3);
@@ -169,6 +171,7 @@ describe("Lexical Analyser", function(){
 
       it("it should throw when setting a first symbol position do a negative or greater than text size", function(){
          var la = new LexicalAnalyser();
+	 la.setMachine(fsmIDandDel);
          la.setText("(a|b);c");
          expect(function(){la.setFirstSymbolPosition(-3)}).toThrow();
          expect(function(){la.setFirstSymbolPosition(13)}).toThrow();
@@ -177,6 +180,7 @@ describe("Lexical Analyser", function(){
       it("It should return incremented Last Symbol Position when consuming symbol", function(){
          var la = new LexicalAnalyser();
          expect(la.getLastSymbolPosition()).toEqual(0);
+	 la.setMachine(fsmIDandDel);
          la.setText("(a|b);c");
          la.consumeSymbol();
          expect(la.getLastSymbolPosition()).toEqual(1);
@@ -188,6 +192,7 @@ describe("Lexical Analyser", function(){
 
       it("It should return a corresponding Symbol in text pointed by las symbol counter when consuming symbol", function(){
          var la = new LexicalAnalyser();
+	 la.setMachine(fsmIDandDel);
          la.setText("(a|b);c");
          expect(la.consumeSymbol()).toEqual("(");
          expect(la.consumeSymbol()).toEqual("a");
@@ -197,6 +202,7 @@ describe("Lexical Analyser", function(){
       it("Should increment column when consuming a symbol",function(){
 
          var la = new LexicalAnalyser();
+	 la.setMachine(fsmIDandDel);
          la.setText("(a|b);c");
          expect(la.getColumn()).toEqual(0);
          la.consumeSymbol();
@@ -208,6 +214,7 @@ describe("Lexical Analyser", function(){
       it("Should increment row, set column to 0 when consuming a \\n symbol", function(){
 
          var la = new LexicalAnalyser();
+	 la.setMachine(fsmIDandDel);
          la.setText("(\na\n|b);c");
          expect(la.getColumn()).toEqual(0);
          expect(la.getRow()).toEqual(0);
