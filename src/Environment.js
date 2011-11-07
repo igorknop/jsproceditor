@@ -5,7 +5,7 @@ function Environment (parent){
 
 Environment.prototype.put = function(key, symbol){
    this.table[key] = symbol;
-}
+};
 
 Environment.prototype.get = function(key){
    for(var e = this; e; e = this.parent){
@@ -14,6 +14,6 @@ Environment.prototype.get = function(key){
       }
    }
    return null;
-}
+};
 
 

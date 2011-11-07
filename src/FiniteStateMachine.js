@@ -1,9 +1,9 @@
 function FiniteStateMachine(){
-   this.states = new Array();
+   this.states = [];
    this.initialState = null;
    this.currentState = null;
-   this.finalStates = new Array();
-   this.transitions = new Array();
+   this.finalStates = [];
+   this.transitions = [];
 }
 
 FiniteStateMachine.prototype.setInitialState = function (state) {
@@ -59,7 +59,7 @@ FiniteStateMachine.prototype.addTransition = function (from, to, transition) {
       throw new ReferenceError("State "+to+" is not defined!");
    }
    if (this.transitions[from]===undefined){
-      this.transitions[from] = new Array();
+      this.transitions[from] = [];
    }
    this.transitions[from][transition] = to;
 };
@@ -117,7 +117,7 @@ FiniteStateMachine.prototype.isMatchArray = function (alphabet) {
 };
 
 FiniteStateMachine.prototype.isMatchString = function (text) {
-   var alphabet = new Array();   
+   var alphabet = [];   
    for(var i=0; i<text.length; i++){
       alphabet.push(text[i]);
    }   
@@ -125,7 +125,7 @@ FiniteStateMachine.prototype.isMatchString = function (text) {
 };
 
 FiniteStateMachine.prototype.transitionString = function (text) {
-   var alphabet = new Array();   
+   var alphabet = [];   
    for(var i=0; i<text.length; i++){
       alphabet.push(text[i]);
    }   
@@ -134,7 +134,7 @@ FiniteStateMachine.prototype.transitionString = function (text) {
 
 FiniteStateMachine.prototype.moveToNextState = function (transition) {
       if (this.transitions[this.getCurrentState()][transition]!==undefined){
-         this.setCurrentState(this.transitions[this.getCurrentState()][transition])
+         this.setCurrentState(this.transitions[this.getCurrentState()][transition]);
       } else {
          throw new ReferenceError("Transition '"+transition+"' is impossible from state '"+this.getCurrentState()+"'!");
          
