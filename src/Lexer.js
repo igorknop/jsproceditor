@@ -48,3 +48,4 @@ Lexer.prototype.scan = function() {
     this.peek = ' ';
     return t;
 };
+
