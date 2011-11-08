@@ -3,8 +3,8 @@ function Token(tag){
 }
 
 function Num(v) {
-    this.value = v;
     this.tag = Tag.NUM;
+    this.value = v;
 }
 
 function Word(tag, lexeme){

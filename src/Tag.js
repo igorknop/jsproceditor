@@ -1,7 +1,7 @@
-function Tag() {
-    this.NUM = 255;
-    this.ID = 257;
-    this.TRUE = 258;
-    this.FALSE = 259;
+Tag = {
+    "NUM": 255,
+    "ID": 257,
+    "TRUE": 258,
+    "FALSE": 259
 }
 
