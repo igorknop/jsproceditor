@@ -2,6 +2,14 @@ function Parser(){
 	this.lookahead = "";
 	this.text = "";
 	this.currentPosition = 0;
+	this.resultText = ""
+}
+
+Parser.prototype.setText = function (text){
+	this.text = text;
+	this.currentPosition = 0;
+	this.lookahead = this.text[this.currentPosition++];
+	this.resultText = ""
 }
 
 Parser.prototype.expr = function(){
@@ -10,11 +18,11 @@ Parser.prototype.expr = function(){
 		if(this.lookahead=="+"){
 			this.match("+");
 			this.term();
-			//console.log("+");
+			this.resultText += "+";
 		} else if(this.lookahead=="-") {
 			this.match("-");
 			this.term();
-			//console.log("+");
+			this.resultText += "-";
 		} else {
 			return;
 		}
@@ -22,25 +30,27 @@ Parser.prototype.expr = function(){
 	}
 };
 
-Parser.prototype.term() = function(){
+Parser.prototype.term = function(){
 	if(this.isDigit(this.lookahead)){
-		//console.log(this.lookahead);
-		match(this.lookahead);
+		this.resultText += this.lookahead;
+		this.match(this.lookahead);
+	} else {
+		throw new Error("Syntax error. Expected a digit at char: "+this.currentPosition+". Got: '"+this.lookahead+"'");
 	}
 };
 
-Parser.prototype.match(t) = fucntion(){
-	if(this.lookahead === t){
-		this.lookahead = this.text[++this.currentPosition];
+Parser.prototype.match = function(t){
+	if(this.lookahead == t){
+		this.lookahead = this.text[this.currentPosition++];
 	} else {
-		throw new Error("Syntax error");
+		throw new Error("Syntax Error. Not expect '"+this.lookahead+"' at char: "+this.currentPosition);
 	}
 }
 
-Parser.prototype.isDigit(c) = function() {
-	return "0".charCodeAt(0)<=c && c <= "9".charCodeAt(0);
+Parser.prototype.isDigit = function(c) {
+	return ("0".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "9".charCodeAt(0));
 }
 
-Parser.prototype.isLetter(c) = function() {
-	return "A".charCodeAt(0)<=c && c <= "z".charCodeAt(0);
+Parser.prototype.isLetter = function(c) {
+	return ("A".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "z".charCodeAt(0));
 }
