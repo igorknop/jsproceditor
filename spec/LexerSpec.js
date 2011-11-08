@@ -3,8 +3,8 @@ describe("A adhoc lexical analiser", function(){
         var lex = new Lexer();
         expect(lex.currentPosition).toEqual(0);
         expect(lex.peek).toEqual(" ");
-        expect(lex.words[0].lexeme).toEqual("true");
-        expect(lex.words[1].lexeme).toEqual("false");
+        expect(lex.words["true"]).toEqual(Tag.TRUE);
+        expect(lex.words["false"]).toEqual(Tag.FALSE);
     });
     
 });
