@@ -1,18 +1,18 @@
-function Parser(){
+function AHOInToPosParser(){
 	this.lookahead = "";
 	this.text = "";
 	this.currentPosition = 0;
 	this.resultText = ""
 }
 
-Parser.prototype.setText = function (text){
+AHOInToPosParser.prototype.setText = function (text){
 	this.text = text;
 	this.currentPosition = 0;
 	this.lookahead = this.text[this.currentPosition++];
 	this.resultText = ""
 }
 
-Parser.prototype.expr = function(){
+AHOInToPosParser.prototype.expr = function(){
 	this.term();
 	while(true){
 		if(this.lookahead=="+"){
@@ -30,7 +30,7 @@ Parser.prototype.expr = function(){
 	}
 };
 
-Parser.prototype.term = function(){
+AHOInToPosParser.prototype.term = function(){
 	if(this.isDigit(this.lookahead)){
 		this.resultText += this.lookahead;
 		this.match(this.lookahead);
@@ -39,7 +39,7 @@ Parser.prototype.term = function(){
 	}
 };
 
-Parser.prototype.match = function(t){
+AHOInToPosParser.prototype.match = function(t){
 	if(this.lookahead == t){
 		this.lookahead = this.text[this.currentPosition++];
 	} else {
@@ -47,10 +47,10 @@ Parser.prototype.match = function(t){
 	}
 }
 
-Parser.prototype.isDigit = function(c) {
+AHOInToPosParser.prototype.isDigit = function(c) {
 	return ("0".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "9".charCodeAt(0));
 }
 
-Parser.prototype.isLetter = function(c) {
+AHOInToPosParser.prototype.isLetter = function(c) {
 	return ("A".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "z".charCodeAt(0));
 }
