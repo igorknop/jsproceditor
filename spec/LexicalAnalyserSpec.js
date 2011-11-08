@@ -43,7 +43,7 @@ describe("Lexical Analyser", function(){
          fsmPar.addTransition(1, "lParentesis",["("]);
          fsmPar.addTransition(1, "rParentesis",[")"]);
 
-	 fsmEq = new FiniteStateMachine();
+	     fsmEq = new FiniteStateMachine();
          fsmEq.addState("initial");
 
          fsmEq.addState("delimiter");
@@ -53,8 +53,8 @@ describe("Lexical Analyser", function(){
 
          fsmEq.addState("id");
          fsmEq.addFinalState("id");
-	 fsmEq.addTransition("initial","id", letters);
-	 fsmEq.addTransition("initial","id", "_");
+	     fsmEq.addTransition("initial","id", letters);
+	     fsmEq.addTransition("initial","id", "_");
          fsmEq.addTransition("id","id", letters);
          fsmEq.addTransition("id","id", numbers);
          fsmEq.addTransition("id","id", "_");
