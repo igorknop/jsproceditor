@@ -1,0 +1,131 @@
+function FEScriptLexer(){
+    this.line = 1;
+	this.column = 1;
+    this.peek = " ";
+    this.words = {};
+    this.currentPosition = 0;
+    this.text = "";
+    
+    this.reserve(new Word(Tag.TRUE, "true"));
+    this.reserve(new Word(Tag.FALSE, "false"));
+    this.reserve(new Word(Tag.EQ, "=="));
+    this.reserve(new Word(Tag.NEQ, "!="));
+    this.reserve(new Word(Tag.SEQUENTIAL, ";"));
+    this.reserve(new Word(Tag.PARALLEL, "||"));
+    this.reserve(new Word(Tag.ATRIBUITION, "||"));
+}
+
+FEScriptLexer.prototype.setText = function(text){
+    this.line = 1;
+	this.column = 1;
+    this.peek = " ";
+    this.words = {};
+    this.currentPosition = 0;
+    this.text = text;
+    
+    this.reserve(new Word(Tag.TRUE, "true"));
+    this.reserve(new Word(Tag.FALSE, "false"));
+}
+
+FEScriptLexer.prototype.readch = function(c){
+	this.peek = this.text[this.currentPosition++];
+	if(c===undefined){
+		return;
+	}
+	this.column += 1;
+	if(this.peek != c){
+		return false;
+	}
+	this.peek = ' ';
+	return true;
+}
+FEScriptLexer.prototype.reserve = function(word){
+    this.words[word.lexeme] = word;
+};
+
+FEScriptLexer.prototype.scan = function() {
+    for (;; this.readch()) {
+        if (this.peek === " " || this.peek === "\t") {
+            continue;
+        }
+        else if (this.peek === "\n") {
+			this.column = 1;
+            this.line += 1;
+        }
+        else break;
+    }
+	switch(this.peek){
+		case "|":
+			if( this.readch("|")){
+				return new Word(Tag.PARALLEL, "||");
+			} else {
+				throw new Error("Syntax Error on line:"+this.line+" column:"+this.column);
+				//return new Token("|");
+			}
+		break;
+		case "=":
+			if( this.readch("=")){
+				return new Word(Tag.EQ, "==");
+			} else {
+				return new Word(Tag.ATRIBUITION, "=");
+			}
+		break;
+		case "!":
+			if( this.readch("=")){
+				return new Word(Tag.NEQ, "!=");
+			} else {
+				throw new Error("Syntax Error on line:"+this.line+" column:"+this.column);
+				//return new Token("!");
+			}
+		break;
+		case "(":
+			this.readch();
+			return new Word(Tag.PARENTESIS_LEFT, "(");
+		break;
+		case ")":
+			this.readch();
+			return new Word(Tag.PARENTESIS_RIGHT, ")");
+		break;
+
+	}
+    if(this.isDigit(this.peek)){
+        var v = 0;
+        do {
+            v = 10*v+parseInt(this.peek,10);
+            this.readch();
+        }while(this.isDigit(this.peek));
+		return new Num(v);
+    }
+    if(this.isLetter(this.peek)){
+        var b = "";
+        do {
+            b = b + this.peek;
+            this.readch();
+        }
+        while (this.isLetter(this.peek) || this.isDigit(this.peek));
+        w = this.words[b];
+        if(w) return w;
+        w = new Word(Tag.ID, b);
+        this.reserve(w);
+        return w;
+    }
+	if(this.peek===undefined){
+		var t = new Token(this.peek);
+		this.peek = ' ';
+		return t;
+	}
+	throw new Error("Syntax Error on line:"+this.line+" column:"+this.column);
+
+};
+
+FEScriptLexer.prototype.currentLine = function(){
+	return this.line;
+}
+
+FEScriptLexer.prototype.isDigit = function(c){
+	return (c!==undefined) && ("0".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "9".charCodeAt(0));
+}
+
+FEScriptLexer.prototype.isLetter = function(c){
+	return (c!==undefined) && ("A".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "z".charCodeAt(0));
+}
