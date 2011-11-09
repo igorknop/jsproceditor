@@ -59,7 +59,7 @@ FEScriptLexer.prototype.scan = function() {
 			if( this.readch("|")){
 				return new Word(Tag.PARALLEL, "||");
 			} else {
-				throw new Error("Syntax Error on line:"+this.line+" column:"+this.column);
+				throw new Error("Lexical Error on line:"+this.line+" column:"+this.column);
 				//return new Token("|");
 			}
 		break;
@@ -74,7 +74,7 @@ FEScriptLexer.prototype.scan = function() {
 			if( this.readch("=")){
 				return new Word(Tag.NEQ, "!=");
 			} else {
-				throw new Error("Syntax Error on line:"+this.line+" column:"+this.column);
+				throw new Error("Lexical Error on line:"+this.line+" column:"+this.column);
 				//return new Token("!");
 			}
 		break;
@@ -114,7 +114,7 @@ FEScriptLexer.prototype.scan = function() {
 		this.peek = ' ';
 		return t;
 	}
-	throw new Error("Syntax Error on line:"+this.line+" column:"+this.column);
+	throw new Error("Lexical Error on line:"+this.line+" column:"+this.column);
 
 };
 
