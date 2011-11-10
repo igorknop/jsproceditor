@@ -17,11 +17,16 @@ FEScriptParser.prototype.move = function (){
 	this.lookahead = this.lexer.scan();
 }
 
+FEScriptParser.prototype.error = function(e){
+		throw new Error(e+" at line:"+this.lexer.line+" column: "+this.lexer.column);
+	
+}
+
 FEScriptParser.prototype.match = function(t){
-	if(this.lookahead.tag == t){
+	if(this.lookahead.tag === t){
 		this.move();
 	} else {
-		throw new Error("Syntax Error. Not expect '"+this.lookahead.lexeme+"' at line:"+this.lexer.line+" column: "+this.lexer.column);
+		this.error("Syntax Error. Not expect '"+this.lookahead.lexeme+"'");
 	}
 }
 
@@ -33,34 +38,6 @@ FEScriptParser.prototype.isLetter = function(c) {
 	return ("A".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "z".charCodeAt(0));
 }
 
-/*
-FEScriptParser.prototype.expr = function(){
-	this.term();
-	while(true){
-		if(this.lookahead=="+"){
-			this.match("+");
-			this.term();
-			this.resultText += "+";
-		} else if(this.lookahead=="-") {
-			this.match("-");
-			this.term();
-			this.resultText += "-";
-		} else {
-			return;
-		}
-		
-	}
-};
-
-FEScriptParser.prototype.term = function(){
-	if(this.isDigit(this.lookahead)){
-		this.resultText += this.lookahead;
-		this.match(this.lookahead);
-	} else {
-		throw new Error("Syntax error. Expected a digit at char: "+this.currentPosition+". Got: '"+this.lookahead+"'");
-	}
-};
-*/
 FEScriptParser.prototype.parse = function(){
 	this.paralelo();
 }
@@ -76,7 +53,7 @@ FEScriptParser.prototype.paralelo = function(){
 			this.sequencial();
 			this.paralelo1();	
 	}
-	throw new Error("Syntax Error on line:"+this.lexer.line+" col:"+this.lexer.column+". Expected: ||, ;, (, ID");
+	this.error("Syntax Error. Expected: ||, ;, (, ID");
 };
 
 FEScriptParser.prototype.paralelo1 = function(){
@@ -89,7 +66,6 @@ FEScriptParser.prototype.paralelo1 = function(){
 
 FEScriptParser.prototype.sequencial = function(){
 	this.move();
-	if(this.lookahead===undefined) return;
 	switch(this.lookahead.tag){
 		case Tag.SEQUENTIAL:
 		case Tag.PARENTESIS_LEFT:
@@ -97,7 +73,7 @@ FEScriptParser.prototype.sequencial = function(){
 			this.processo();
 			this.sequencial1();	
 	}
-	throw new Error("Syntax Error on line:"+this.lexer.line+" col:"+this.lexer.column+". Expected: ;, (, ID");
+	this.error("Syntax Error. Expected: ;, (, ID");
 };
 
 FEScriptParser.prototype.sequencial1 = function(){
@@ -113,12 +89,12 @@ FEScriptParser.prototype.processo = function(){
 	if(this.match(Tag.PARENTESIS_LEFT)){
 			this.paralelo();
 			if(!this.match(Tag.PARENTESIS_RIGHT)){
-				throw new Error("Syntax Error on line:"+this.lexer.line+" col:"+this.lexer.column+". Expected: )");
+				this.error("Syntax Error. Expected: )");
 			}
 	}else if(!this.match(Tag.ID)){
-		throw new Error("Syntax Error on line:"+this.lexer.line+" col:"+this.lexer.column+". Expected: ID or (");
+		this.error("Syntax Error. Expected: ID or (");
 	}else if(!this.match(Tag.NUM)){
-		throw new Error("Syntax Error on line:"+this.lexer.line+" col:"+this.lexer.column+". Expected: ID or (");
+		this.error("Syntax Error.Expected: NUM");
 	}
 };
 
