@@ -99,4 +99,11 @@ describe("A adhoc Fisiocomp Environment Script lexical analiser", function(){
 		expect(function(){lex.scan();}).not.toThrow();	
 	});
 	
+	it("Should not throw Exception when scan a 'a;b'", function(){
+		var lex = new FEScriptLexer();
+		lex.setText("a;b");
+		lex.scan();
+		expect(function(){lex.scan();}).not.toThrow();	
+	});
+	
 });

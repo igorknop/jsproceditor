@@ -12,7 +12,7 @@ function FEScriptLexer(){
     this.reserve(new Word(Tag.NEQ, "!="));
     this.reserve(new Word(Tag.SEQUENTIAL, ";"));
     this.reserve(new Word(Tag.PARALLEL, "||"));
-    this.reserve(new Word(Tag.ATRIBUITION, "||"));
+    this.reserve(new Word(Tag.ATRIBUITION, "="));
 }
 
 FEScriptLexer.prototype.setText = function(text){
@@ -85,6 +85,10 @@ FEScriptLexer.prototype.scan = function() {
 		case ")":
 			this.readch();
 			return new Word(Tag.PARENTESIS_RIGHT, ")");
+		break;
+		case ";":
+			this.readch();
+			return new Word(Tag.SEQUENTIAL, ";");
 		break;
 
 	}
