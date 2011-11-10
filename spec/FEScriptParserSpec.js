@@ -20,11 +20,11 @@ describe("AdHoc FEScriptParser", function(){
 		psr.move();
 		expect({tag:Tag.ID, lexeme:"a"}).toEqual(psr.lookahead);
 	});
-	it("Should not throw a exception when passing 'a;b' to it", function(){
+	it("Should not throw a exception when passing 'a;b||c' to it", function(){
 		var psr = new FEScriptParser();
 		var lex = new FEScriptLexer();
 		psr.setLexer(lex);
-		psr.setText("teste");
+		psr.setText("a;b||c");
 		
 		expect(function(){psr.parse();}).not.toThrow();
 	});
