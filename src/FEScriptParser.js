@@ -39,62 +39,64 @@ FEScriptParser.prototype.isLetter = function(c) {
 }
 
 FEScriptParser.prototype.parse = function(){
+	this.move();
 	this.paralelo();
+	if(this.lookahead.lexeme!==undefined){
+		this.error("Syntax Error. Not expected: "+ this.lookahead.lexeme);	
+	}
 }
 
 FEScriptParser.prototype.paralelo = function(){
-	this.move();
-	if(this.lookahead===undefined) return;
 	switch(this.lookahead.tag){
-		case Tag.PARALLEL:
-		case Tag.SEQUENTIAL:
 		case Tag.PARENTESIS_LEFT:
 		case Tag.ID:
-			this.sequencial();
-			this.paralelo1();	
+			this.sequential();
+			this.paralelo1();
+		break;
+		default:
+			this.error("Syntax Error. Expected: (, ID");
 	}
-	this.error("Syntax Error. Expected: ||, ;, (, ID");
 };
 
 FEScriptParser.prototype.paralelo1 = function(){
-	this.move();
-	if(this.match(Tag.PARALLEL)){
-			this.sequencial();
+	if(this.lookahead.tag===Tag.PARALLEL){
+			this.move();
+			this.sequential();
 			this.paralelo1();		
 	}
 };
 
-FEScriptParser.prototype.sequencial = function(){
-	this.move();
+FEScriptParser.prototype.sequential = function(){
 	switch(this.lookahead.tag){
-		case Tag.SEQUENTIAL:
 		case Tag.PARENTESIS_LEFT:
 		case Tag.ID:
 			this.processo();
-			this.sequencial1();	
+			this.sequential1();
+		break;
+		default:
+			this.error("Syntax Error. Expected: (, ID");
 	}
-	this.error("Syntax Error. Expected: ;, (, ID");
 };
 
-FEScriptParser.prototype.sequencial1 = function(){
-	this.move();
-	if(this.match(Tag.SEQUENTIAL)){
+FEScriptParser.prototype.sequential1 = function(){
+	if(this.lookahead.tag===Tag.SEQUENTIAL){
+			this.move();
 			this.processo();
 			this.sequential1();		
 	}
 };
 
 FEScriptParser.prototype.processo = function(){
-	this.move();
-	if(this.match(Tag.PARENTESIS_LEFT)){
+	if(this.lookahead.tag === Tag.PARENTESIS_LEFT){
+			this.move();
 			this.paralelo();
-			if(!this.match(Tag.PARENTESIS_RIGHT)){
-				this.error("Syntax Error. Expected: )");
-			}
-	}else if(!this.match(Tag.ID)){
-		this.error("Syntax Error. Expected: ID or (");
-	}else if(!this.match(Tag.NUM)){
-		this.error("Syntax Error.Expected: NUM");
+			this.match(Tag.PARENTESIS_RIGHT);
+	}else if(this.lookahead.tag === Tag.ID){
+		this.move();
+	}else if(this.lookahead.tag === Tag.NUM){
+		this.move();
+	} else {
+		this.error("Syntax Error. Expected: (, ID, NUM");
 	}
 };
 
