@@ -1,0 +1,10 @@
+body {
+	width: 600px;
+	margin: auto;
+}
+.error {
+	background-color: #FDD;
+}
+.ok {
+	background-color: #DFD;
+}
