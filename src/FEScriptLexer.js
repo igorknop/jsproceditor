@@ -8,7 +8,11 @@ function FEScriptLexer(){
     
     this.reserve(new Word(Tag.TRUE, "true"));
     this.reserve(new Word(Tag.FALSE, "false"));
+    this.reserve(new Word(Tag.LT, "<"));
+    this.reserve(new Word(Tag.GT, ">"));
     this.reserve(new Word(Tag.EQ, "=="));
+    this.reserve(new Word(Tag.LEQ, "<="));
+    this.reserve(new Word(Tag.GEQ, ">="));
     this.reserve(new Word(Tag.NEQ, "!="));
     this.reserve(new Word(Tag.SEQUENTIAL, ";"));
     this.reserve(new Word(Tag.PARALLEL, "||"));
@@ -60,7 +64,6 @@ FEScriptLexer.prototype.scan = function() {
 				return new Word(Tag.PARALLEL, "||");
 			} else {
 				throw new Error("Lexical Error on line:"+this.line+" column:"+this.column);
-				//return new Token("|");
 			}
 		break;
 		case "=":
@@ -75,7 +78,6 @@ FEScriptLexer.prototype.scan = function() {
 				return new Word(Tag.NEQ, "!=");
 			} else {
 				throw new Error("Lexical Error on line:"+this.line+" column:"+this.column);
-				//return new Token("!");
 			}
 		break;
 		case "(":
@@ -89,6 +91,20 @@ FEScriptLexer.prototype.scan = function() {
 		case ";":
 			this.readch();
 			return new Word(Tag.SEQUENTIAL, ";");
+		break;
+		case "<":
+			if( this.readch("=")){
+				return new Word(Tag.LEQ, "<=");
+			} else {
+				return new Word(Tag.LT, "<");
+			}
+		break;
+		case ">":
+			if( this.readch("=")){
+				return new Word(Tag.GEQ, ">=");
+			} else {
+				return new Word(Tag.GT, ">");
+			}
 		break;
 
 	}
