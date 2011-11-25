@@ -88,31 +88,23 @@ FEScriptParser.prototype.sequential1 = function(){
 
 FEScriptParser.prototype.afirmacao = function(){
 	switch(this.lookahead.tag){
-		case Tag.PARENTESIS_LEFT:
+		case Tag.ID:
 			this.move();
-			this.paralelo();
-			this.match(Tag.PARENTESIS_RIGHT);
+			this.processo();
 		break;
 		case Tag.BRACKETS_LEFT:
          this.condicao();
       break;
-		case Tag.ID:
+		case Tag.PARENTESIS_LEFT:
 			this.move();
-			this.afirmacao1();
+			this.paralelo();
+			this.match(Tag.PARENTESIS_RIGHT);
 		break;
 		default:
 			this.error("Syntax Error. Expected: (, ID, NUM");
 	}
 };
 
-FEScriptParser.prototype.afirmacao1 = function(){
-		if(this.lookahead.tag === Tag.){
-			this.processo();
-		} else if(this.lookahead.tag === Tag.ATRIBUITION){
-			this.atribuicao();
-			
-		}
-};
 
 FEScriptParser.prototype.atribuicao = function(){
 	if(this.lookahead.tag === Tag.ID){
@@ -122,10 +114,8 @@ FEScriptParser.prototype.atribuicao = function(){
 }
 
 FEScriptParser.prototype.processo = function(){
-	if(this.lookahead.tag === Tag.ID){
 		this.match(Tag.PARENTESIS_LEFT);
 		this.match(Tag.PARENTESIS_RIGHT);
-	}
 }
 
 FEScriptParser.prototype.condicao = function(){
