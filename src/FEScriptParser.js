@@ -70,7 +70,7 @@ FEScriptParser.prototype.sequential = function(){
 	switch(this.lookahead.tag){
 		case Tag.PARENTESIS_LEFT:
 		case Tag.ID:
-			this.processo();
+			this.afirmacao();
 			this.sequential1();
 		break;
 		default:
@@ -81,22 +81,115 @@ FEScriptParser.prototype.sequential = function(){
 FEScriptParser.prototype.sequential1 = function(){
 	if(this.lookahead.tag===Tag.SEQUENTIAL){
 			this.move();
-			this.processo();
+			this.afirmacao();
 			this.sequential1();		
 	}
 };
 
-FEScriptParser.prototype.processo = function(){
-	if(this.lookahead.tag === Tag.PARENTESIS_LEFT){
+FEScriptParser.prototype.afirmacao = function(){
+	switch(this.lookahead.tag){
+		case Tag.PARENTESIS_LEFT:
 			this.move();
 			this.paralelo();
 			this.match(Tag.PARENTESIS_RIGHT);
-	}else if(this.lookahead.tag === Tag.ID){
-		this.move();
-	}else if(this.lookahead.tag === Tag.NUM){
-		this.move();
-	} else {
-		this.error("Syntax Error. Expected: (, ID, NUM");
+		break;
+		case Tag.BRACKETS_LEFT:
+         this.condicao();
+      break;
+		case Tag.ID:
+			this.move();
+			this.afirmacao1();
+		break;
+		default:
+			this.error("Syntax Error. Expected: (, ID, NUM");
 	}
 };
 
+FEScriptParser.prototype.afirmacao1 = function(){
+		if(this.lookahead.tag === Tag.){
+			this.processo();
+		} else if(this.lookahead.tag === Tag.ATRIBUITION){
+			this.atribuicao();
+			
+		}
+};
+
+FEScriptParser.prototype.atribuicao = function(){
+	if(this.lookahead.tag === Tag.ID){
+		this.match(Tag.ATRIBUITION);
+		this.processo();
+	}
+}
+
+FEScriptParser.prototype.processo = function(){
+	if(this.lookahead.tag === Tag.ID){
+		this.match(Tag.PARENTESIS_LEFT);
+		this.match(Tag.PARENTESIS_RIGHT);
+	}
+}
+
+FEScriptParser.prototype.condicao = function(){
+	if(this.lookahead.tag === Tag.BRACKETS_LEFT){
+			this.move();
+			this.comparacao();
+			this.match(Tag.THEN);
+			this.afirmacao();
+			this.match(Tag.ELSE);
+			this.afirmacao();
+			this.match(Tag.PARENTESIS_RIGHT);
+	}
+};
+
+FEScriptParser.prototype.comparacao = function(){
+			this.termo();
+			this.comparacao1();
+};
+
+FEScriptParser.prototype.comparacao1 = function(){
+	switch(this.lookahead.tag){
+		case Tag.EQ:
+			this.move();
+			this.termo();
+		break;
+		case Tag.NEQ:
+			this.move();
+			this.termo();
+		break;
+		case Tag.LT:
+			this.move();
+			this.termo();
+		break;
+		case Tag.GT:
+			this.move();
+			this.termo();
+		break;
+		case Tag.LEQ:
+			this.move();
+			this.termo();
+		break;
+		case Tag.GEQ:
+			this.move();
+			this.termo();
+		break;
+	}
+};
+
+FEScriptParser.prototype.termo = function(){
+	switch(this.lookahead.tag){
+		case Tag.ID:
+			this.termo1();
+		break;
+		case Tag.NUM:
+      
+		break;
+		default:
+			this.error("Syntax Error. Expected: ID");
+	}
+};
+
+FEScriptParser.prototype.termo1 = function(){
+	this.move();
+	if(this.lookahead.tag === Tag.PARENTESIS_LEFT){
+			this.match(Tag.PARENTESIS_RIGHT);
+	}
+};
