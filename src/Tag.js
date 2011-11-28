@@ -13,6 +13,9 @@ Tag = {
     "AND": 256,	
     "OR": 271,	
 
+    "THEN": 294,	
+    "ELSE": 295,	
+
     "BRACKETS_LEFT": 296,
     "BRACKETS_RIGHT": 297,
     "PARENTESIS_LEFT": 298,

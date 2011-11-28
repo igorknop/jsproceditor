@@ -49,6 +49,7 @@ FEScriptParser.prototype.parse = function(){
 FEScriptParser.prototype.paralelo = function(){
 	switch(this.lookahead.tag){
 		case Tag.PARENTESIS_LEFT:
+		case Tag.BRACKETS_LEFT:
 		case Tag.ID:
 			this.sequential();
 			this.paralelo1();
@@ -68,6 +69,7 @@ FEScriptParser.prototype.paralelo1 = function(){
 
 FEScriptParser.prototype.sequential = function(){
 	switch(this.lookahead.tag){
+		case Tag.BRACKETS_LEFT:
 		case Tag.PARENTESIS_LEFT:
 		case Tag.ID:
 			this.afirmacao();
@@ -90,7 +92,7 @@ FEScriptParser.prototype.afirmacao = function(){
 	switch(this.lookahead.tag){
 		case Tag.ID:
 			this.move();
-			this.processo();
+			this.afirmacao1();
 		break;
 		case Tag.BRACKETS_LEFT:
          this.condicao();
@@ -105,17 +107,35 @@ FEScriptParser.prototype.afirmacao = function(){
 	}
 };
 
+FEScriptParser.prototype.afirmacao1 = function(){
+	switch(this.lookahead.tag){
+		case Tag.PARENTESIS_LEFT:
+		   this.match(Tag.PARENTESIS_LEFT);
+		   this.match(Tag.PARENTESIS_RIGHT);
+      break;
+		case Tag.ATRIBUITION:
+         this.atribuicao();
+      break;
+      default:
+			this.error("Syntax Error. Expected: (), =");
+   }
+}
 
 FEScriptParser.prototype.atribuicao = function(){
-	if(this.lookahead.tag === Tag.ID){
-		this.match(Tag.ATRIBUITION);
-		this.processo();
-	}
+   this.move();
+   if(this.lookahead.tag === Tag.ID){
+		this.match(Tag.ID);
+	   this.match(Tag.PARENTESIS_LEFT);
+	   this.match(Tag.PARENTESIS_RIGHT);
+   } else if(this.lookahead.tag === Tag.NUM){
+		this.match(Tag.NUM);
+   }else {
+	   this.error("Syntax Error. Expected: ID(), NUM");
+   }
+
 }
 
 FEScriptParser.prototype.processo = function(){
-		this.match(Tag.PARENTESIS_LEFT);
-		this.match(Tag.PARENTESIS_RIGHT);
 }
 
 FEScriptParser.prototype.condicao = function(){
@@ -123,10 +143,10 @@ FEScriptParser.prototype.condicao = function(){
 			this.move();
 			this.comparacao();
 			this.match(Tag.THEN);
-			this.afirmacao();
+			this.paralelo();
 			this.match(Tag.ELSE);
-			this.afirmacao();
-			this.match(Tag.PARENTESIS_RIGHT);
+			this.paralelo();
+			this.match(Tag.BRACKETS_RIGHT);
 	}
 };
 
@@ -170,16 +190,17 @@ FEScriptParser.prototype.termo = function(){
 			this.termo1();
 		break;
 		case Tag.NUM:
-      
+			this.match(Tag.NUM);
 		break;
 		default:
-			this.error("Syntax Error. Expected: ID");
+			this.error("Syntax Error. Expected: ID, ID() or NUM");
 	}
 };
 
 FEScriptParser.prototype.termo1 = function(){
 	this.move();
 	if(this.lookahead.tag === Tag.PARENTESIS_LEFT){
+      	this.move();
 			this.match(Tag.PARENTESIS_RIGHT);
 	}
 };

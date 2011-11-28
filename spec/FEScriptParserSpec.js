@@ -44,5 +44,50 @@ describe("AdHoc FEScriptParser", function(){
 		
 		expect(function(){psr.parse();}).toThrow();
 	});
+
+	it("Should not throw a exception when passing an attribuition 'a = b()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("x = b()");
+		
+		expect(function(){psr.parse();}).not.toThrow();
+	});
+
+	it("Should not throw a exception when passing an attribuition '[ n>m ?a():b()]' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("[ n>m ?a():b()]");
+		
+		expect(function(){psr.parse();}).not.toThrow();
+	});
 	
+	it("Should throw a exception when passing an attribuition '9 = t' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("9 = y");
+		
+		expect(function(){psr.parse();}).toThrow();
+	});
+
+	it("Should not throw a exception when passing an attribuition 'a = a(); [a>2?b()||c(): b();c()]' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a = a(); [a>2 ? b()||c() : b();c()]");
+		
+		expect(function(){psr.parse();}).not.toThrow();
+	});
+
+	it("Should not throw a exception when passing an attribuition 'a = a(); [a>2 ? b = b()||c() : b();c()]; a = b()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a = a(); [a>2 ? b = b()||c() : b();c()]; a = b()");
+		
+		expect(function(){psr.parse();}).not.toThrow();
+	});
+
 });

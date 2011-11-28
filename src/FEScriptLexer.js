@@ -10,6 +10,8 @@ function FEScriptLexer(){
     this.reserve(new Word(Tag.FALSE, "false"));
     this.reserve(new Word(Tag.LT, "<"));
     this.reserve(new Word(Tag.GT, ">"));
+    this.reserve(new Word(Tag.BRACKETS_LEFT, "["));
+    this.reserve(new Word(Tag.BRACKETS_RIGHT, "]"));
     this.reserve(new Word(Tag.EQ, "=="));
     this.reserve(new Word(Tag.LEQ, "<="));
     this.reserve(new Word(Tag.GEQ, ">="));
@@ -80,6 +82,14 @@ FEScriptLexer.prototype.scan = function() {
 				throw new Error("Lexical Error on line:"+this.line+" column:"+this.column);
 			}
 		break;
+		case "?":
+			this.readch();
+			return new Word(Tag.THEN, "?");
+		break;
+		case ":":
+			this.readch();
+			return new Word(Tag.ELSE, ":");
+		break;
 		case "(":
 			this.readch();
 			return new Word(Tag.PARENTESIS_LEFT, "(");
@@ -87,6 +97,14 @@ FEScriptLexer.prototype.scan = function() {
 		case ")":
 			this.readch();
 			return new Word(Tag.PARENTESIS_RIGHT, ")");
+		break;
+		case "[":
+			this.readch();
+			return new Word(Tag.BRACKETS_LEFT, "[");
+		break;
+		case "]":
+			this.readch();
+			return new Word(Tag.BRACKETS_RIGHT, "]");
 		break;
 		case ";":
 			this.readch();
