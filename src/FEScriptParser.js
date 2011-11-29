@@ -40,10 +40,11 @@ FEScriptParser.prototype.isLetter = function(c) {
 
 FEScriptParser.prototype.parse = function(){
     this.move();
-    this.paralelo();
+    var root = this.paralelo();
     if(this.lookahead.lexeme!==undefined){
     	this.error("Syntax Error. Not expected: "+ this.lookahead.lexeme);	
     }
+    return root;
 }
 
 FEScriptParser.prototype.paralelo = function(){
@@ -51,8 +52,13 @@ FEScriptParser.prototype.paralelo = function(){
     	case Tag.PARENTESIS_LEFT:
     	case Tag.BRACKETS_LEFT:
     	case Tag.ID:
-    		this.sequential();
-    		this.paralelo1();
+            var p= new Node();
+            p.type = this.lookahead.tag;
+    		var s = this.sequential();
+    		var p1 = this.paralelo1();
+            p.addChild(s);
+            p.addChild(p1);
+            return s;
     	break;
     	default:
     		this.error("Syntax Error. Expected: (, ID");
@@ -61,9 +67,14 @@ FEScriptParser.prototype.paralelo = function(){
 
 FEScriptParser.prototype.paralelo1 = function(){
     if(this.lookahead.tag===Tag.PARALLEL){
+            var p= new Node();
+            p.type = this.lookahead.tag;
     		this.move();
-    		this.sequential();
-    		this.paralelo1();		
+    		var s = this.sequential();
+    		var p1 = this.paralelo1();		
+            p.addChild(s);
+            p.addChild(p1);
+            return p;
     }
 };
 
@@ -72,8 +83,13 @@ FEScriptParser.prototype.sequential = function(){
     	case Tag.BRACKETS_LEFT:
     	case Tag.PARENTESIS_LEFT:
     	case Tag.ID:
-    		this.afirmacao();
-    		this.sequential1();
+            var s= new Node();
+    		var a = this.afirmacao();
+            s.type = this.lookahead.tag;
+    		var s1 = this.sequential1();
+            s.addChild(a);
+            s.addChild(s1);
+            return s;
     	break;
     	default:
     		this.error("Syntax Error. Expected: (, ID");
@@ -83,24 +99,34 @@ FEScriptParser.prototype.sequential = function(){
 FEScriptParser.prototype.sequential1 = function(){
     if(this.lookahead.tag===Tag.SEQUENTIAL){
     		this.move();
-    		this.afirmacao();
-    		this.sequential1();		
+            var s= new Node();
+            s.type = this.lookahead.tag;
+    		var a = this.afirmacao();
+    		var s1 = this.sequential1();
+            s.addChild(a);
+            s.addChild(s1);
+            return s;
     }
 };
 
 FEScriptParser.prototype.afirmacao = function(){
     switch(this.lookahead.tag){
     	case Tag.ID:
+            var a = new Node();
+            a.value = this.lookahead.lexeme;
     		this.move();
-    		this.afirmacao1();
+    		var a1 = this.afirmacao1();
+            a.addChild(a1);
+            return a;
     	break;
     	case Tag.BRACKETS_LEFT:
-         this.condicao();
+         return this.condicao();
       break;
     	case Tag.PARENTESIS_LEFT:
     		this.move();
-    		this.paralelo();
+    		var p = this.paralelo();
     		this.match(Tag.PARENTESIS_RIGHT);
+            return p;
     	break;
     	default:
     		this.error("Syntax Error. Expected: (, ID, NUM");
@@ -112,9 +138,15 @@ FEScriptParser.prototype.afirmacao1 = function(){
     	case Tag.PARENTESIS_LEFT:
     	   this.match(Tag.PARENTESIS_LEFT);
     	   this.match(Tag.PARENTESIS_RIGHT);
+           var p = new Node();
+           p.type = "process";
+           return p;
       break;
     	case Tag.ATRIBUITION:
+         var a = new Node();
+         a.type = this.lookahead.tag;
          this.atribuicao();
+         return a;
       break;
       default:
     		this.error("Syntax Error. Expected: (), =");
@@ -124,11 +156,19 @@ FEScriptParser.prototype.afirmacao1 = function(){
 FEScriptParser.prototype.atribuicao = function(){
    this.move();
    if(this.lookahead.tag === Tag.ID){
-    	this.match(Tag.ID);
+       this.match(Tag.ID);
+       var n = new Node();
+       n.type = this.lookahead.tag;
+       n.value = this.lookahead.lexeme;
        this.match(Tag.PARENTESIS_LEFT);
        this.match(Tag.PARENTESIS_RIGHT);
+       return n;
    } else if(this.lookahead.tag === Tag.NUM){
     	this.match(Tag.NUM);
+        var n = new Node();
+        n.type = this.lookahead.tag;
+        n.value = this.lookahead.lexeme;
+        return n;
    }else {
        this.error("Syntax Error. Expected: ID(), NUM");
    }
@@ -140,13 +180,22 @@ FEScriptParser.prototype.processo = function(){
 
 FEScriptParser.prototype.condicao = function(){
     if(this.lookahead.tag === Tag.BRACKETS_LEFT){
+            var cond = new Node();
+            cond.type = this.lookahead.tag;
+            cond.value = this.lookahead.lexeme;
+
     		this.move();
-    		this.comparacao();
+    		var t1 = this.comparacao();
     		this.match(Tag.THEN);
-    		this.paralelo();
+    		var t2 = this.paralelo();
     		this.match(Tag.ELSE);
-    		this.paralelo();
+    		var t3 = this.paralelo();
     		this.match(Tag.BRACKETS_RIGHT);
+
+            cond.addChild(t1);
+            cond.addChild(t2);
+            cond.addChild(t3);
+            return cond;
     }
 };
 
@@ -184,10 +233,10 @@ FEScriptParser.prototype.comparacao1 = function(){
     		this.move();
     		var t = this.termo();
     	break;
-        n.type = this.lookahead.tag;
-        n.addChild(t);
-        return n;
     }
+    n.type = this.lookahead.tag;
+    n.addChild(t);
+    return n;
 };
 
 FEScriptParser.prototype.termo = function(){
@@ -208,10 +257,10 @@ FEScriptParser.prototype.termo = function(){
 };
 
 FEScriptParser.prototype.termo1 = function(){
-    this.move();
     var n = new Node();
     n.type = this.lookahead.tag;
     n.value = this.lookahead.lexeme;
+    this.move();
     if(this.lookahead.tag === Tag.PARENTESIS_LEFT){
         this.move();
         this.match(Tag.PARENTESIS_RIGHT);
