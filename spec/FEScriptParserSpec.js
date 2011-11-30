@@ -28,13 +28,23 @@ describe("AdHoc FEScriptParser", function(){
 		
 		expect(function(){psr.parse();}).not.toThrow();
 	});
+	it("Should not throw a exception when passing 'a()||b()||c()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a()||b()||c()");
+		var r;
+		expect(function(){r = psr.parse();}).not.toThrow();
+        console.dir(r);
+	});
 	it("Should not throw a exception when passing 'a()||(b();c())' to it", function(){
 		var psr = new FEScriptParser();
 		var lex = new FEScriptLexer();
 		psr.setLexer(lex);
 		psr.setText("a()||(b();c())");
-		
-		expect(function(){psr.parse();}).not.toThrow();
+		var r;
+		expect(function(){r = psr.parse();}).not.toThrow();
+        console.dir(r);
 	});
 	it("Should throw a exception when passing 'a();b())' to it", function(){
 		var psr = new FEScriptParser();

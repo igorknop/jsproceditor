@@ -5,6 +5,7 @@ function init() {
 	loadScript([
 		"Tag.js",
 		"Token.js",
+		"Node.js",
 		"FEScriptLexer.js",
 		"FEScriptParser.js"
 	]);
@@ -46,6 +47,7 @@ function btnrunClick(){
 	}
 	var errors = document.getElementById("errors");
 	var error = document.createElement("dt");
+	errors.innerHTML = "";
 	error.innerHTML = new Date()+": OK";
 	error.setAttribute("class","ok");
 	errors.appendChild(error);
