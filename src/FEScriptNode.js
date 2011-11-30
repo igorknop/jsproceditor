@@ -1,10 +1,11 @@
 FEScriptNodeType = {
-    "ID"          : 01,
-    "NUM"         : 02,
-    "PROCESS"     : 03,
-    "PARALLEL"    : 04,
-    "SEQUENTIAL"  : 05,
-    "ATRIBUITION" : 06,
+    "ID"          : "ID"          /* 01 */ ,
+    "NUM"         : "NUM"         /* 02 */ ,
+    "PROCESS"     : "PROCESS"     /* 03 */ ,
+    "PARALLEL"    : "PARALLEL"    /* 04 */ ,
+    "SEQUENTIAL"  : "SEQUENTIAL"  /* 05 */ ,
+    "ATRIBUITION" : "ATRIBUITION" /* 06 */ ,
+    "CONDITIONAL" : "CONDITIONAL" /* 06 */ ,
 };
 
 function FEScriptNode (type){

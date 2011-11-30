@@ -32,5 +32,136 @@ describe("A syntax tree node", function(){
 		expect(FEScriptNodeType.PROCESS).toEqual(tree.type);
 		expect(FEScriptNodeType.ID).toEqual(tree.childNodes[0].type);
 		expect("a").toEqual(tree.childNodes[0].value);
+	})
+	
+	it("Should have a process tree with two nodes when passing 'a()||b()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a()||b()");
+		
+		var tree = psr.parse();
+		
+		expect(FEScriptNodeType.PARALLEL).toEqual(tree.type);
+		var ltree = tree.childNodes[0];
+		expect(FEScriptNodeType.PROCESS).toEqual(ltree.type);
+		var rtree = tree.childNodes[1];
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.type);
+		expect(FEScriptNodeType.ID).toEqual(ltree.childNodes[0].type);
+		expect("a").toEqual(ltree.childNodes[0].value);
+		expect(FEScriptNodeType.ID).toEqual(rtree.childNodes[0].type);
+		expect("b").toEqual(rtree.childNodes[0].value);
+	});
+	
+	it("Should have a process tree with three nodes when passing 'a()||b()||c()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a()||b()||c()");
+		
+		var tree = psr.parse();
+		
+		expect(FEScriptNodeType.PARALLEL).toEqual(tree.type);
+		var ltree = tree.childNodes[0];
+		expect(FEScriptNodeType.PARALLEL).toEqual(ltree.type);
+		var rtree = tree.childNodes[1];
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.type);
+		expect(FEScriptNodeType.ID).toEqual(rtree.childNodes[0].type);
+		expect("c").toEqual(rtree.childNodes[0].value);
+	});
+	it("Should have a process tree with four nodes when passing 'a()||b()||c()||d()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a()||b()||c()||d()");
+		
+		var tree = psr.parse();
+		
+		expect(FEScriptNodeType.PARALLEL).toEqual(tree.type);
+		var ltree = tree.childNodes[0];
+		expect(FEScriptNodeType.PARALLEL).toEqual(ltree.type);
+		var rtree = tree.childNodes[1];
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.type);
+		expect(FEScriptNodeType.ID).toEqual(rtree.childNodes[0].type);
+		expect("d").toEqual(rtree.childNodes[0].value);
+		var ltreechild = ltree.childNodes[1];
+		expect(FEScriptNodeType.PROCESS).toEqual(ltreechild.type);
+		expect("c").toEqual(ltreechild.childNodes[0].value);
+	});
+	
+	it("Should have a process tree with three nodes when passing 'a();b();c()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a();b();c()");
+		
+		var tree = psr.parse();
+		
+		expect(FEScriptNodeType.SEQUENTIAL).toEqual(tree.type);
+		var ltree = tree.childNodes[0];
+		expect(FEScriptNodeType.SEQUENTIAL).toEqual(ltree.type);
+		var rtree = tree.childNodes[1];
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.type);
+		expect(FEScriptNodeType.ID).toEqual(rtree.childNodes[0].type);
+		expect("c").toEqual(rtree.childNodes[0].value);
+	});
+
+	it("Should have a process tree with three nodes when passing 'a()||b();c()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a()||b();c()");
+		
+		var tree = psr.parse();
+		
+		expect(FEScriptNodeType.PARALLEL).toEqual(tree.type);
+		var ltree = tree.childNodes[0];
+		expect(FEScriptNodeType.PROCESS).toEqual(ltree.type);
+		expect("a").toEqual(ltree.childNodes[0].value);
+		var rtree = tree.childNodes[1];
+		expect(FEScriptNodeType.SEQUENTIAL).toEqual(rtree.type);
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.childNodes[0].type);
+		expect("b").toEqual(rtree.childNodes[0].childNodes[0].value);
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.childNodes[1].type);
+		expect("c").toEqual(rtree.childNodes[1].childNodes[0].value);
+	});
+	it("Should have a process tree with three nodes when passing 'a();b()||c()' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText("a();b()||c()");
+		
+		var tree = psr.parse();
+		
+		expect(FEScriptNodeType.PARALLEL).toEqual(tree.type);
+		var ltree = tree.childNodes[0];
+		expect(FEScriptNodeType.SEQUENTIAL).toEqual(ltree.type);
+		expect(FEScriptNodeType.PROCESS).toEqual(ltree.childNodes[0].type);
+		expect("a").toEqual(ltree.childNodes[0].childNodes[0].value);
+		expect(FEScriptNodeType.PROCESS).toEqual(ltree.childNodes[1].type);
+		expect("b").toEqual(ltree.childNodes[1].childNodes[0].value);
+		var rtree = tree.childNodes[1];
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.type);
+		expect("c").toEqual(rtree.childNodes[0].value);
+	});
+
+	it("Should have a process tree with eleven nodes when passing '[ n>m ?a():b()]' to it", function(){
+		var psr = new FEScriptParser();
+		var lex = new FEScriptLexer();
+		psr.setLexer(lex);
+		psr.setText('[ n>m ?a():b()]');
+		
+		var tree = psr.parse();
+		
+		expect(FEScriptNodeType.PARALLEL).toEqual(tree.type);
+		var ltree = tree.childNodes[0];
+		expect(FEScriptNodeType.PROCESS).toEqual(ltree.type);
+		expect("a").toEqual(ltree.childNodes[0].value);
+		var rtree = tree.childNodes[1];
+		expect(FEScriptNodeType.SEQUENTIAL).toEqual(rtree.type);
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.childNodes[0].type);
+		expect("b").toEqual(rtree.childNodes[0].childNodes[0].value);
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.childNodes[1].type);
+		expect("c").toEqual(rtree.childNodes[1].childNodes[0].value);
 	});
 });

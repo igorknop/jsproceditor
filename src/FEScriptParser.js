@@ -47,6 +47,16 @@ FEScriptParser.prototype.parse = function(){
     return root;
 }
 
+FEScriptParser.prototype.setLeftMostNode = function(nodeTarget, node){
+    if(!nodeTarget){
+        return;
+    }
+    if(nodeTarget.childNodes[0]){
+        this.setLeftMostNode(nodeTarget.childNodes[0], node);
+    }else{
+        nodeTarget.childNodes[0] = node;
+    }
+};
 FEScriptParser.prototype.paralelo = function(){
     switch(this.lookahead.tag){
     	case Tag.PARENTESIS_LEFT:
@@ -55,7 +65,7 @@ FEScriptParser.prototype.paralelo = function(){
     		var s = this.sequential();
     		var p1 = this.paralelo1();
             if(p1){
-                p1.childNodes[0] = s;
+                this.setLeftMostNode(p1,s);
                 return p1;
             }else{
                 return s;
@@ -72,11 +82,11 @@ FEScriptParser.prototype.paralelo1 = function(){
             p.type = FEScriptNodeType.PARALLEL;
     		this.move();
     		var s = this.sequential();
-    		var p1 = this.paralelo1();
             p.childNodes[0] = null;        
             p.addChild(s);
+    		var p1 = this.paralelo1();
             if(p1){
-                p1.childNodes[0] = p;        
+                this.setLeftMostNode(p1,p);
                 return p1;
             }else{
                 return p;
@@ -92,7 +102,7 @@ FEScriptParser.prototype.sequential = function(){
     		var a = this.afirmacao();
     		var s1 = this.sequential1();
             if(s1){
-                s1.childNodes[0] = a;
+                this.setLeftMostNode(s1,a);
                 return s1;
             } else {
                 return a;
@@ -113,7 +123,7 @@ FEScriptParser.prototype.sequential1 = function(){
             s.childNodes[0] = null;
             s.addChild(a);
             if(s1){
-                s1.childNodes[0] = s;
+                this.setLeftMostNode(s1,s);
                 return s1;
             } else {
                 return s;
