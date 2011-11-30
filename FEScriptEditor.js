@@ -5,7 +5,7 @@ function init() {
 	loadScript([
 		"Tag.js",
 		"Token.js",
-		"Node.js",
+		"FEScriptNode.js",
 		"FEScriptLexer.js",
 		"FEScriptParser.js"
 	]);

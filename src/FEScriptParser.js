@@ -68,8 +68,8 @@ FEScriptParser.prototype.paralelo = function(){
 
 FEScriptParser.prototype.paralelo1 = function(){
     if(this.lookahead.tag===Tag.PARALLEL){
-            var p= new Node();
-            p.type = this.lookahead.tag;
+            var p= new FEScriptNode();
+            p.type = FEScriptNodeType.PARALLEL;
     		this.move();
     		var s = this.sequential();
     		var p1 = this.paralelo1();
@@ -105,8 +105,8 @@ FEScriptParser.prototype.sequential = function(){
 
 FEScriptParser.prototype.sequential1 = function(){
     if(this.lookahead.tag===Tag.SEQUENTIAL){
-            var s = new Node();
-            s.type = this.lookahead.tag;
+            var s = new FEScriptNode();
+            s.type = FEScriptNodeType.SEQUENTIAL;
     		this.move();
     		var a = this.afirmacao();
     		var s1 = this.sequential1();
@@ -124,15 +124,15 @@ FEScriptParser.prototype.sequential1 = function(){
 FEScriptParser.prototype.afirmacao = function(){
     switch(this.lookahead.tag){
     	case Tag.ID:
-            var id = new Node();
+            var id = new FEScriptNode();
             id.value = this.lookahead.lexeme;
-            id.type = this.lookahead.tag;
+            id.type = FEScriptNodeType.ID;
     		this.move();
     		var a1 = this.afirmacao1();
-            if(a1.type === "process"){
+            if(a1.type === FEScriptNodeType.PROCESS){
                 a1.addChild(id);
                 return a1;
-            } else if(a1.type === Tag.ATRIBUITION){
+            } else if(a1.type === FEScriptNodeType.ATRIBUITION){
                 a1.childNodes[0] = id;
                 return a1;
             }
@@ -157,13 +157,13 @@ FEScriptParser.prototype.afirmacao1 = function(){
     	case Tag.PARENTESIS_LEFT:
     	   this.match(Tag.PARENTESIS_LEFT);
     	   this.match(Tag.PARENTESIS_RIGHT);
-           var p = new Node();
-           p.type = "process";
+           var p = new FEScriptNode();
+           p.type = FEScriptNodeType.PROCESS;
            return p;
       break;
     	case Tag.ATRIBUITION:
-         var at = new Node();
-         at.type = this.lookahead.tag;
+         var at = new FEScriptNode();
+         at.type = FEScriptNodeType.ATRIBUITION;
          at.childNodes[0] = null;
          this.move();
          var t = this.termo();
@@ -177,7 +177,7 @@ FEScriptParser.prototype.afirmacao1 = function(){
 
 FEScriptParser.prototype.condicao = function(){
     if(this.lookahead.tag === Tag.BRACKETS_LEFT){
-            var cond = new Node();
+            var cond = new FEScriptNode();
             cond.type = this.lookahead.tag;
             cond.value = this.lookahead.lexeme;
 
@@ -204,7 +204,7 @@ FEScriptParser.prototype.comparacao = function(){
 };
 
 FEScriptParser.prototype.comparacao1 = function(){
-    var n = new Node();
+    var n = new FEScriptNode();
     switch(this.lookahead.tag){
     	case Tag.EQ:
     		this.move();
@@ -243,9 +243,9 @@ FEScriptParser.prototype.termo = function(){
     	break;
     	case Tag.NUM:
     		this.match(Tag.NUM);
-            var n = new Node();
-            n.type = this.lookahead.tag;
-            n.value = this.lookahead.lexeme;
+            var n = new FEScriptNode();
+            n.type = FEScriptNodeType.NUM;
+            n.value = parseInt(this.lookahead.lexeme);
             return n;
     	break;
     	default:
@@ -254,42 +254,17 @@ FEScriptParser.prototype.termo = function(){
 };
 
 FEScriptParser.prototype.termo1 = function(){
-    var n = new Node();
-    n.type = this.lookahead.tag;
+    var n = new FEScriptNode();
+    n.type = FEScriptNodeType.ID;
     n.value = this.lookahead.lexeme;
     this.move();
     if(this.lookahead.tag === Tag.PARENTESIS_LEFT){
         this.move();
         this.match(Tag.PARENTESIS_RIGHT);
-        n.type = "process";
+        var p = new FEScriptNode();
+        p.type = FEScriptNodeType.PROCESS;
+        p.addChild(n);
+        return p;
     }
     return n;
 };
-
-//
-//retirar
-FEScriptParser.prototype.atribuicao = function(){
-   this.move();
-   if(this.lookahead.tag === Tag.ID){
-       this.match(Tag.ID);
-       var n = new Node();
-       n.type = this.lookahead.tag;
-       n.value = this.lookahead.lexeme;
-       this.match(Tag.PARENTESIS_LEFT);
-       this.match(Tag.PARENTESIS_RIGHT);
-       return n;
-   } else if(this.lookahead.tag === Tag.NUM){
-    	this.match(Tag.NUM);
-        var n = new Node();
-        n.type = this.lookahead.tag;
-        n.value = this.lookahead.lexeme;
-        return n;
-   }else {
-       this.error("Syntax Error. Expected: ID(), NUM");
-   }
-
-}
-
-FEScriptParser.prototype.processo = function(){
-}
-
