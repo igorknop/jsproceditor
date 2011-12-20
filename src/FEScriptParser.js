@@ -1,3 +1,13 @@
+if(exports){
+   var Token = require("./Token").Token;
+   var Word = require("./Token").Word;
+   var Num = require("./Token").Num;
+   var Tag = require("./Tag").Tag;
+   var FEScriptNode = require("./FEScriptNode").FEScriptNode;
+   var FEScriptNodeType = require("./FEScriptNode").FEScriptNodeType;
+
+}
+
 function FEScriptParser(){
     this.lexer;
     this.lookahead;
@@ -278,3 +288,7 @@ FEScriptParser.prototype.termo1 = function(){
     }
     return n;
 };
+
+if(exports){
+   exports.FEScriptParser = FEScriptParser;
+}

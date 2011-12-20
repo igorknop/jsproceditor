@@ -12,3 +12,6 @@ function Word(tag, lexeme){
     this.tag = tag;
 }
 
+   exports.Token = Token;
+   exports.Word = Word;
+   exports.Num = Num;

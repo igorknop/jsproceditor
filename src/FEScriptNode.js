@@ -30,3 +30,8 @@ FEScriptNode.prototype.addChild = function(child){
 	this.childNodes.push(child);
 	child.parentNode = this;
 };
+
+if(exports){
+   exports.FEScriptNode = FEScriptNode;
+   exports.FEScriptNodeType = FEScriptNodeType;
+}

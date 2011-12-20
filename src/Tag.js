@@ -26,3 +26,6 @@ Tag = {
     "PARALLEL": 302	
 }
 
+if(exports){
+   exports.Tag = Tag;
+}

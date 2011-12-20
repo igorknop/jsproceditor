@@ -1,5 +1,7 @@
 var fs = require('fs'),
-    formidable = require("formidable");
+    formidable = require("formidable"),
+    sys = require("sys");
+    
 
     var body = "<!doctype html>"+
          "<html>"+
@@ -7,8 +9,8 @@ var fs = require('fs'),
          "     <title>JCMEditor</title></head>"+
          "  <body style='margin: auto; width: 450px;'>"+
          "     <h1>JCMEditor</h1>"+
-         "  <form action='/parse' method='post' enctype='multipart/form-data'>"+
-         "     <textarea name='script' cols='50' rows='5'>a();(b()||c());d()</textarea>"+
+         "  <form action='/' method='post' enctype='multipart/form-data'>"+
+         "     <textarea name='script' cols='50' rows='5'>${input}</textarea>"+
          "     <input type='submit' value='Run'/>"+
          "  </form>"+
          "  <pre><samp id='result'>${result}</samp></pre>"+
@@ -19,18 +21,56 @@ function start(response, request){
       console.log("Request handler 'start' was called!");
       
       response.writeHead(200, {"Content-Type": "text/html"});
-      var html = body.replace("${result}","");
+      var html = body.replace("${result}","").replace("${input}","a();(b()||c());d()");
       response.write(html);
       response.end();
 }
 
 function parse(response, request){
-      console.log("Request handler 'start' was called!");
+   console.log("Request handler 'parse' was called!");
+   var html = body;
+
+   if(request.method.toLowerCase()==='post') {
+      var Tag = require("../Tag").Tag,
+          Token = require("../Token").Token,
+          Num = require("../Token").Num,
+          Word = require("../Token").Word,
+          FEScriptLexer = require("../FEScriptLexer").FEScriptLexer,
+          FEScriptNode = require("../FEScriptNode"),
+          FEScriptParser = require("../FEScriptParser").FEScriptParser;
       
+      var form = formidable.IncomingForm();
+      console.log("Parsing form data...");
+      form.parse(request, function(error, fields, files){
+         sys.inspect(fields);
+         console.log("Form data parsed.");
+         console.log("Parsing script:'"+fields.script+"'");
+         var lex = new FEScriptLexer();
+         var psr = new FEScriptParser();
+         psr.setLexer(lex);
+         psr.setText(fields.script);
+         try{
+            psr.parse();
+            console.log("Script parsed.");
+            response.writeHead(200, {"Content-Type": "text/html"});
+            html = body.replace("${result}","Ok").replace("${input}", fields.script);
+            response.write(html);
+            response.end();
+         } catch(e){
+            console.error("Parser error!");
+            response.writeHead(200, {"Content-Type": "text/html"});
+            html = body.replace("${result}", e.message).replace("${input}", fields.script);
+            response.write(html);
+            response.end();
+         }
+      });
+   }
+   else {
       response.writeHead(200, {"Content-Type": "text/html"});
-      var html = body.replace("${result}","No result");
+      html = body.replace("${result}","").replace("${input}", "a();(b()||c());d()");
       response.write(html);
       response.end();
+   }
 }
 
 

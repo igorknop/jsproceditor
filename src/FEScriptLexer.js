@@ -1,3 +1,10 @@
+if(exports){
+   var Token = require("./Token").Token;
+   var Word = require("./Token").Word;
+   var Num = require("./Token").Num;
+   var Tag = require("./Tag").Tag;
+}
+
 function FEScriptLexer(){
     this.line = 1;
 	this.column = 1;
@@ -166,4 +173,8 @@ FEScriptLexer.prototype.isDigit = function(c){
 
 FEScriptLexer.prototype.isLetter = function(c){
 	return (c!==undefined) && ("A".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "z".charCodeAt(0));
+}
+
+if(exports){
+   exports.FEScriptLexer = FEScriptLexer;
 }
