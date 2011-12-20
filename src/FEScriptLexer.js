@@ -1,4 +1,4 @@
-if(exports){
+if(typeof exports !== 'undefined'){
    var Token = require("./Token").Token;
    var Word = require("./Token").Word;
    var Num = require("./Token").Num;
@@ -175,6 +175,6 @@ FEScriptLexer.prototype.isLetter = function(c){
 	return (c!==undefined) && ("A".charCodeAt(0)<=c.charCodeAt(0)) && (c.charCodeAt(0) <= "z".charCodeAt(0));
 }
 
-if(exports){
+if(typeof exports!=='undefined'){
    exports.FEScriptLexer = FEScriptLexer;
 }

@@ -1,4 +1,4 @@
-if(exports){
+if(typeof exports!=='undefined'){
    var Token = require("./Token").Token;
    var Word = require("./Token").Word;
    var Num = require("./Token").Num;
@@ -198,7 +198,7 @@ FEScriptParser.prototype.afirmacao1 = function(){
 FEScriptParser.prototype.condicao = function(){
     if(this.lookahead.tag === Tag.BRACKETS_LEFT){
             var cond = new FEScriptNode();
-            cond.type = this.lookahead.tag;
+            cond.type = FEScriptNodeType.CONDITIONAL;
             cond.value = this.lookahead.lexeme;
 
     		this.move();
@@ -219,39 +219,48 @@ FEScriptParser.prototype.condicao = function(){
 FEScriptParser.prototype.comparacao = function(){
     		var t1 = this.termo();
     		var t2 = this.comparacao1();
-            t2.addChild(t1);
-            return t2;
+         //this.setLeftMostNode(t2,t1);
+         t2.addChild(t1);
+         var aux = t2.childNodes[1];
+         t2.childNodes[1] = t2.childNodes[0];
+         t2.childNodes[0] = aux;
+         
+         return t2;
 };
 
 FEScriptParser.prototype.comparacao1 = function(){
     var n = new FEScriptNode();
     switch(this.lookahead.tag){
     	case Tag.EQ:
-    		this.move();
+         n.type = FEScriptNodeType.EQ;
     		var t = this.termo();
     	break;
     	case Tag.NEQ:
     		this.move();
+         n.type = FEScriptNodeType.NEQ;
     		var t = this.termo();
     	break;
     	case Tag.LT:
     		this.move();
+         n.type = FEScriptNodeType.LT;
     		var t = this.termo();
     	break;
     	case Tag.GT:
     		this.move();
+         n.type = FEScriptNodeType.GT;
     		var t = this.termo();
     	break;
     	case Tag.LEQ:
     		this.move();
+         n.type = FEScriptNodeType.LEQ;
     		var t = this.termo();
     	break;
     	case Tag.GEQ:
     		this.move();
+         n.type = FEScriptNodeType.GEQ;
     		var t = this.termo();
     	break;
     }
-    n.type = this.lookahead.tag;
     n.addChild(t);
     return n;
 };
@@ -289,6 +298,6 @@ FEScriptParser.prototype.termo1 = function(){
     return n;
 };
 
-if(exports){
+if(typeof exports!=='undefined'){
    exports.FEScriptParser = FEScriptParser;
 }

@@ -153,15 +153,16 @@ describe("A syntax tree node", function(){
 		
 		var tree = psr.parse();
 		
-		expect(FEScriptNodeType.PARALLEL).toEqual(tree.type);
+		expect(FEScriptNodeType.CONDITIONAL).toEqual(tree.type);
 		var ltree = tree.childNodes[0];
-		expect(FEScriptNodeType.PROCESS).toEqual(ltree.type);
-		expect("a").toEqual(ltree.childNodes[0].value);
+		expect(FEScriptNodeType.GT).toEqual(ltree.type);
+		expect("n").toEqual(ltree.childNodes[0].value);
+		expect("m").toEqual(ltree.childNodes[1].value);
 		var rtree = tree.childNodes[1];
-		expect(FEScriptNodeType.SEQUENTIAL).toEqual(rtree.type);
-		expect(FEScriptNodeType.PROCESS).toEqual(rtree.childNodes[0].type);
-		expect("b").toEqual(rtree.childNodes[0].childNodes[0].value);
-		expect(FEScriptNodeType.PROCESS).toEqual(rtree.childNodes[1].type);
-		expect("c").toEqual(rtree.childNodes[1].childNodes[0].value);
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.type);
+		expect("a").toEqual(rtree.childNodes[0].value);
+		var rtree2 = tree.childNodes[2];
+		expect(FEScriptNodeType.PROCESS).toEqual(rtree.type);
+		expect("b").toEqual(rtree2.childNodes[0].value);
 	});
 });

@@ -26,6 +26,6 @@ Tag = {
     "PARALLEL": 302	
 }
 
-if(exports){
+if(typeof exports!=='undefined'){
    exports.Tag = Tag;
 }

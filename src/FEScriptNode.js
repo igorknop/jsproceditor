@@ -6,6 +6,14 @@ FEScriptNodeType = {
     "SEQUENTIAL"  : "SEQUENTIAL"  /* 05 */ ,
     "ATRIBUITION" : "ATRIBUITION" /* 06 */ ,
     "CONDITIONAL" : "CONDITIONAL" /* 06 */ ,
+    "EQ":"EQ",
+    "NEQ":"NEQ",
+    "LT":"LT",
+    "LEQ":"LEQ",
+    "GT":"GT",
+    "GEQ":"GEQ",
+    "AND":"AND",	
+    "OR":"OR",	
 };
 
 function FEScriptNode (type){
@@ -31,7 +39,7 @@ FEScriptNode.prototype.addChild = function(child){
 	child.parentNode = this;
 };
 
-if(exports){
+if(typeof exports!=='undefined'){
    exports.FEScriptNode = FEScriptNode;
    exports.FEScriptNodeType = FEScriptNodeType;
 }
