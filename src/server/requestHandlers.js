@@ -1,6 +1,7 @@
 var fs = require('fs'),
     formidable = require("formidable"),
-    sys = require("sys");
+    sys = require("sys"),
+    exec = require("child_process").exec;
     
 
     var body = "<!doctype html>"+
@@ -50,12 +51,45 @@ function parse(response, request){
          psr.setLexer(lex);
          psr.setText(fields.script);
          try{
-            psr.parse();
+            var tree = psr.parse();
             console.log("Script parsed.");
-            response.writeHead(200, {"Content-Type": "text/html"});
-            html = body.replace("${result}","Ok").replace("${input}", fields.script);
-            response.write(html);
-            response.end();
+            var processes = {
+               "a": "bash -c 'date; sleep 2; date'",
+               "b": "bash -c 'date; sleep 1; date'",
+               "c": "bash -c 'date; sleep 4; date'",
+               "d": "bash -c 'date; sleep 2; date'",
+            }
+            
+            function runTree(root, response, content, callback){
+               if(!root.parentNode){
+                  response.writeHead(200, {"Content-Type": "text/html"});
+               }
+               switch(root.type){
+                  case FEScriptNodeType.PROCESS:
+                     console.log("Execunting process "+
+                           root.childNodes[0].value+"():"+
+                           processes[root.childNodes[0].value]+
+                           "\n"
+                     );
+                     exec(processes[root.childNodes[0].value], function(error, stdout, stderr){
+                        content+=stdout+"\n";
+                        content+=stderr+"\n";
+                        content+=error+"\n";
+                        console.log("Process executed. error: "+error+"\nstdout:"+stdout+"\nstderr: "+stderr);
+                     });
+                  break;
+                  case FEScriptNodeType.SEQUENTIAL:
+                  break;
+                  case FEScriptNodeType.PARALLEL:
+                  break;
+               }
+               if(!root.parentNode){
+                  html = body.replace("${result}", content);
+                  response.write(html);
+                  response.end();
+               }
+            }
+            outx = runTree(tree, response, "");
          } catch(e){
             console.error("Parser error!");
             response.writeHead(200, {"Content-Type": "text/html"});
