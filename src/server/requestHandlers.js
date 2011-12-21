@@ -30,6 +30,7 @@ function start(response, request){
 function parse(response, request){
    console.log("Request handler 'parse' was called!");
    var html = body;
+   var content = "";
 
    if(request.method.toLowerCase()==='post') {
       var Tag = require("../Tag").Tag,
@@ -54,46 +55,20 @@ function parse(response, request){
             var tree = psr.parse();
             console.log("Script parsed.");
             var processes = {
-               "a": "bash -c 'date; sleep 2; date'",
-               "b": "bash -c 'date; sleep 1; date'",
-               "c": "bash -c 'date; sleep 4; date'",
-               "d": "bash -c 'date; sleep 2; date'",
+               "a": "echo '[A';date; sleep 2; ls -la; date; echo 'A]'",
+               "b": "echo '[B';date; sleep 1; date; echo 'B]'",
+               "c": "echo '[C';date; sleep 4; date; echo 'C]'",
+               "d": "echo '[D';date; sleep 2; date; echo 'D]'",
             }
             
-            function runTree(root, response, content, callback){
-               switch(root.type){
-                  case FEScriptNodeType.PROCESS:
-                     console.log("Execunting process "+
-                           root.childNodes[0].value+"():"+
-                           processes[root.childNodes[0].value]+
-                           "\n"
-                     );
-                     var running = 1;
-                     exec(processes[root.childNodes[0].value], function(error, stdout, stderr){
-                        console.log("Process executed.\nerror: "+error+"\nstdout:"+stdout+"\nstderr: "+stderr);
-                        while(running>0){
-                           console.log(running);
-                        };
-                        running = 0;
-                        content+=stdout+"\n";
-                        content+=stderr+"\n";
-                        content+=error+"\n";
-                     });
-                     while(running>0){
-                        console.log(running);
-                     };
-                     return content;
-                  break;
-                  case FEScriptNodeType.SEQUENTIAL:
-                  break;
-                  case FEScriptNodeType.PARALLEL:
-                  break;
-               }
-            }
+            var running = 0;
+            html = body.replace("${input}", fields.script);
+            console.dir(content);
             response.writeHead(200, {"Content-Type": "text/html"});
-            var outx = runTree(tree, response, "");
-            html = body.replace("${result}", outx).replace("${input}", fields.script);
-            response.write(html);
+            template2 = html.split("${result}");
+            response.write(template2[0]);
+            runTree(tree, response, content, processes, html);
+            response.write(template2[1]);
             response.end();
          } catch(e){
             console.error("Parser error!");
@@ -112,6 +87,35 @@ function parse(response, request){
    }
 }
 
+            function runTree(root, response, content, processes, html){
+               switch(root.type){
+                  case FEScriptNodeType.PROCESS:
+                     console.log("Execunting process "+
+                           root.childNodes[0].value+"():"+
+                           processes[root.childNodes[0].value]+
+                           "\n"
+                     );
+                     exec(processes[root.childNodes[0].value], function(error, stdout, stderr){
+                        console.log("Process executed.\nerror: "+error+"\nstdout:\n"+stdout+"\nstderr: "+stderr);
+                        content+=stdout+"${result}\n";
+                        running = 0;
+                        writeResponse(response, content, html);
+                     });
+                  break;
+                  case FEScriptNodeType.SEQUENTIAL:
+                     var running = 1;
+                     runTree(root.childNodes[0], response, content, processes, html);
+                     runTree(root.childNodes[1], response, content, processes, html);
+                  break;
+                  case FEScriptNodeType.PARALLEL:
+                     runTree(root.childNodes[0], response, content, processes, html);
+                     runTree(root.childNodes[1], response, content, processes, html);
+                  break;
+               }
+            }
+            function writeResponse(response, content, template){
+               response.write(content);
+            }
 
 function favicon (response){
    fs.readFile("favicon.ico", "binary", function(error, file){
