@@ -61,9 +61,6 @@ function parse(response, request){
             }
             
             function runTree(root, response, content, callback){
-               if(!root.parentNode){
-                  response.writeHead(200, {"Content-Type": "text/html"});
-               }
                switch(root.type){
                   case FEScriptNodeType.PROCESS:
                      console.log("Execunting process "+
@@ -71,25 +68,33 @@ function parse(response, request){
                            processes[root.childNodes[0].value]+
                            "\n"
                      );
+                     var running = 1;
                      exec(processes[root.childNodes[0].value], function(error, stdout, stderr){
+                        console.log("Process executed.\nerror: "+error+"\nstdout:"+stdout+"\nstderr: "+stderr);
+                        while(running>0){
+                           console.log(running);
+                        };
+                        running = 0;
                         content+=stdout+"\n";
                         content+=stderr+"\n";
                         content+=error+"\n";
-                        console.log("Process executed. error: "+error+"\nstdout:"+stdout+"\nstderr: "+stderr);
                      });
+                     while(running>0){
+                        console.log(running);
+                     };
+                     return content;
                   break;
                   case FEScriptNodeType.SEQUENTIAL:
                   break;
                   case FEScriptNodeType.PARALLEL:
                   break;
                }
-               if(!root.parentNode){
-                  html = body.replace("${result}", content);
-                  response.write(html);
-                  response.end();
-               }
             }
-            outx = runTree(tree, response, "");
+            response.writeHead(200, {"Content-Type": "text/html"});
+            var outx = runTree(tree, response, "");
+            html = body.replace("${result}", outx).replace("${input}", fields.script);
+            response.write(html);
+            response.end();
          } catch(e){
             console.error("Parser error!");
             response.writeHead(200, {"Content-Type": "text/html"});
