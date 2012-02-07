@@ -1,7 +1,8 @@
 var fs = require('fs'),
     formidable = require("formidable"),
     sys = require("sys"),
-    exec = require("child_process").exec;
+    exec = require("child_process").exec,
+    Barrier = require("./barrierpoints").Barrier;
     
 
     var body = "<!doctype html>"+
@@ -67,7 +68,12 @@ function parse(response, request){
             //response.writeHead(200, {"Content-Type": "text/html"});
             //template2 = html.split("${result}");
             //response.write(template2[0]);
-            runTree(tree, response, content, processes, html);
+            var newBarrier = new Barrier(1, function(){
+               console.log("Completed execution.")
+            }, function(){
+               console.log("Aborted execution.")
+            });
+            runTree(tree, response, content, processes, html, newBarrier);
             //response.write(template2[1]);
             //response.end();
          } catch(e){
@@ -87,7 +93,7 @@ function parse(response, request){
    }
 }
 
-            function runTree(root, response, content, processes, html){
+            function runTree(root, response, content, processes, html, barrier){
                switch(root.type){
                   case FEScriptNodeType.PROCESS:
                      console.log("Execunting process "+
@@ -98,18 +104,27 @@ function parse(response, request){
                      exec(processes[root.childNodes[0].value], function(error, stdout, stderr){
                         console.log("Process executed.\nerror: "+error+"\nstdout:\n"+stdout+"\nstderr: "+stderr);
                         content+=stdout+"${result}\n";
-                        running = 0;
+                        barrier.submit();
                         writeResponse(response, content, html);
                      });
                   break;
                   case FEScriptNodeType.SEQUENTIAL:
-                     var running = 1;
-                     runTree(root.childNodes[0], response, content, processes, html);
-                     runTree(root.childNodes[1], response, content, processes, html);
+                     var newBarrier = new Barrier(1, function(){
+                        console.log("Completed a sequential execution.")
+                        runTree(root.childNodes[0], response, content, processes, html, newBarrier);
+                     }, function(){
+                        console.log("Aborted a sequential execution.")
+                     });
+                     runTree(root.childNodes[1], response, content, processes, html, newBarrier);
                   break;
                   case FEScriptNodeType.PARALLEL:
-                     runTree(root.childNodes[0], response, content, processes, html);
-                     runTree(root.childNodes[1], response, content, processes, html);
+                     var newBarrier = new Barrier(2, function(){
+                        console.log("Completed a parallel execution.")
+                        runTree(root.childNodes[0], response, content, processes, html, newBarrier);
+                        runTree(root.childNodes[1], response, content, processes, html, newBarrier);
+                     }, function(){
+                        console.log("Aborted a parallel execution.")
+                     });
                   break;
                }
             }
