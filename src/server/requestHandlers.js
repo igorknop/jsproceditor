@@ -31,7 +31,7 @@ function start(response, request){
 function parse(response, request){
    console.log("Request handler 'parse' was called!");
    var html = body;
-   var content = "";
+   var content = [];
 
    if(request.method.toLowerCase()==='post') {
       var Tag = require("../Tag").Tag,
@@ -59,27 +59,26 @@ function parse(response, request){
                "a": "echo '[A';date; sleep 2; date; echo 'A]'",
                "b": "echo '[B';date; sleep 1; date; echo 'B]'",
                "c": "echo '[C';date; sleep 4; date; echo 'C]'",
-               "d": "echo '[D';date; sleep 2; date; echo 'D]'",
+               "d": "echo '[D';date; sleep 3; date; echo 'D]'",
             }
             
             var running = 0;
             html = body.replace("${input}", fields.script);
             console.dir(content);
-            //response.writeHead(200, {"Content-Type": "text/html"});
-            //template2 = html.split("${result}");
-            //response.write(template2[0]);
             var newBarrier = new Barrier(1, function(){
-               console.log("Completed execution.")
+               console.log("Completed workflow execution.")
+               response.writeHead(200, {"Content-Type": "text/html"});
+               html = body.replace("${result}", content.join("\n")).replace("${input}", fields.script);
+               response.write(html);
+               response.end();
             }, function(){
-               console.log("Aborted execution.")
+               console.log("Aborted workflow execution.")
             });
             runTree(tree, response, content, processes, html, newBarrier);
-            //response.write(template2[1]);
-            //response.end();
          } catch(e){
-            console.error("Parser error!");
             response.writeHead(200, {"Content-Type": "text/html"});
             html = body.replace("${result}", e.message).replace("${input}", fields.script);
+            console.error("Parser error!");
             response.write(html);
             response.end();
          }
@@ -103,28 +102,23 @@ function parse(response, request){
                      );
                      exec(processes[root.childNodes[0].value], function(error, stdout, stderr){
                         console.log("Process executed.\nerror: "+error+"\nstdout:\n"+stdout+"\nstderr: "+stderr);
-                        content+=stdout+"${result}\n";
+                        content.push(stdout);
                         barrier.submit();
-                        writeResponse(response, content, html);
                      });
                   break;
                   case FEScriptNodeType.SEQUENTIAL:
                      var newBarrier = new Barrier(1, function(){
                         console.log("Completed a sequential execution.")
-                        runTree(root.childNodes[0], response, content, processes, html, newBarrier);
+                        runTree(root.childNodes[1], response, content, processes, html, barrier);
                      }, function(){
                         console.log("Aborted a sequential execution.")
                      });
-                     runTree(root.childNodes[1], response, content, processes, html, newBarrier);
+                     runTree(root.childNodes[0], response, content, processes, html, newBarrier);
                   break;
                   case FEScriptNodeType.PARALLEL:
-                     var newBarrier = new Barrier(2, function(){
-                        console.log("Completed a parallel execution.")
-                        runTree(root.childNodes[0], response, content, processes, html, newBarrier);
-                        runTree(root.childNodes[1], response, content, processes, html, newBarrier);
-                     }, function(){
-                        console.log("Aborted a parallel execution.")
-                     });
+                     barrier.parties++;
+                     runTree(root.childNodes[0], response, content, processes, html, barrier);
+                     runTree(root.childNodes[1], response, content, processes, html, barrier);
                   break;
                }
             }
