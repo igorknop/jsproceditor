@@ -55,7 +55,7 @@ function parse(response, request){
             var tree = psr.parse();
             console.log("Script parsed.");
             var processes = {
-               "a": "echo '[A';date; sleep 2; ls -la; date; echo 'A]'",
+               "a": "echo '[A';date; sleep 2; date; echo 'A]'",
                "b": "echo '[B';date; sleep 1; date; echo 'B]'",
                "c": "echo '[C';date; sleep 4; date; echo 'C]'",
                "d": "echo '[D';date; sleep 2; date; echo 'D]'",
@@ -64,12 +64,12 @@ function parse(response, request){
             var running = 0;
             html = body.replace("${input}", fields.script);
             console.dir(content);
-            response.writeHead(200, {"Content-Type": "text/html"});
-            template2 = html.split("${result}");
-            response.write(template2[0]);
+            //response.writeHead(200, {"Content-Type": "text/html"});
+            //template2 = html.split("${result}");
+            //response.write(template2[0]);
             runTree(tree, response, content, processes, html);
-            response.write(template2[1]);
-            response.end();
+            //response.write(template2[1]);
+            //response.end();
          } catch(e){
             console.error("Parser error!");
             response.writeHead(200, {"Content-Type": "text/html"});
@@ -114,7 +114,12 @@ function parse(response, request){
                }
             }
             function writeResponse(response, content, template){
+      response.writeHead(200, {"Content-Type": "text/html"});
+            var template2 = template.split("${result}");
+            response.write(template2[0]);
                response.write(content);
+            response.write(template2[1]);
+            response.end();
             }
 
 function favicon (response){
